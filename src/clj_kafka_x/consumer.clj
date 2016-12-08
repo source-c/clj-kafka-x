@@ -1,8 +1,8 @@
 (ns ^{:doc "Clojure interface for Kafka Consumer API. For
   complete JavaDocs, see:
-  http://kafka.apache.org/090/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
+  http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
     clj-kafka-x.consumer
-  (:require [clj-kafka-x.data :referr :all])
+  (:require [clj-kafka-x.data :refer :all])
   (:import java.util.List
            java.util.regex.Pattern
            [org.apache.kafka.clients.consumer ConsumerRebalanceListener KafkaConsumer OffsetAndMetadata OffsetCommitCallback]
@@ -16,10 +16,10 @@
 (defn consumer
   "Takes a map of config options and returns a `KafkaConsumer` for consuming records from Kafka.
 
-  NOTE `KafkaConsumer` instances are NOT thread-safe, see https://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded
+  NOTE `KafkaConsumer` instances are NOT thread-safe, see https://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded
 
   For more information and available conifg options,
-  see: http://kafka.apache.org/090/javadoc/index.html?org/apache/kafka/clients/consumer/KafkaConsumer.html
+  see: http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/KafkaConsumer.html
        http://kafka.apache.org/documentation.html#newconsumerconfigs
 
   Usage:
@@ -86,10 +86,10 @@
   ;; => nil
 
   For more in-depth information
-  http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.List)
-  http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.List,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
-  http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.regex.Pattern,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
-  http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.List)
+  http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.List)
+  http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.List,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
+  http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.regex.Pattern,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
+  http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.List)
   "
   [^KafkaConsumer consumer topics & {:keys [assigned-callback revoked-callback]
                                      :or {assigned-callback (fn [_])
@@ -314,7 +314,7 @@
   "Gets the last committed offset for the partition of a topic.
    NOTE This function is a blocking I/O operation.
 
-   see http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#committed(org.apache.kafka.common.TopicPartition)
+   see http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#committed(org.apache.kafka.common.TopicPartition)
 
   Usage:
 
@@ -332,7 +332,7 @@
   "Get metadata about ALL partitions for ALL topics that the user is authorized to view.
    NOTE This function is a blocking I/O operation.
 
-   See http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#listTopics()
+   See http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#listTopics()
 
   Usage :
 
@@ -367,7 +367,7 @@
   "Get metadata about all partitions for a particular topic.
    NOTE This function is a blocking I/O operation.
 
-   See http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#partitionsFor(java.lang.String)
+   See http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#partitionsFor(java.lang.String)
 
   Usage :
 
@@ -395,7 +395,7 @@
 (defn pause
   "Stops messages being consumed from the given partitions.
    This takes effect on the next call on the messages function
-   See http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#pause(org.apache.kafka.common.TopicPartition...)
+   See http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#pause(org.apache.kafka.common.TopicPartition...)
 
   Usage:
 
@@ -411,7 +411,7 @@
 (defn resume
   "Resumes messages being consumed from the given partitions.
    This takes effect on the next call on the messages function
-   See http://kafka.apache.org/090/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#resume(org.apache.kafka.common.TopicPartition...)
+   See http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#resume(org.apache.kafka.common.TopicPartition...)
 
   Usage:
 

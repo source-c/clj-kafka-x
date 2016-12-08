@@ -4,9 +4,9 @@ A Clojure library for the Kafka 0.10.X.X release.
 
 This library takes it's inspiration and some code from the [clj- kafka](https://github.com/pingles/clj-kafka/) and from the [kafkian](https://github.com/DayoOliyide/kafkian) libraries.
 
-Current code was initialy taken from [kafkian](https://github.com/DayoOliyide/kafkian), but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers.
+Current code was initially taken from [kafkian](https://github.com/DayoOliyide/kafkian), but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers.
 
-NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the [clj-kafka](https://github.com/pingles/clj-kafka/) for Kafka Clusters version 0.8 and 0.9 and [kafkian](https://github.com/DayoOliyide/kafkian) for 0.9 and 10.0.0.0.
+NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the [clj-kafka](https://github.com/pingles/clj-kafka/) for Kafka Clusters version 0.8 and 0.9 and [kafkian](https://github.com/DayoOliyide/kafkian) for 0.9 and, may be, 10.0.0.0.
 
 == Installation
 
