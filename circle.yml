@@ -1,0 +1,3 @@
+test:
+  override:
+    - MIDJE_COLORIZE=NONE lein do clean, test, jar

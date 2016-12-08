@@ -1,0 +1,69 @@
+= clj-kafka-x
+
+A Clojure library for the Kafka 0.10.X.X release.
+
+This library takes it's inspiration and some code from the [clj- kafka](https://github.com/pingles/clj-kafka/) and from the [kafkian](https://github.com/DayoOliyide/kafkian) libraries.
+
+Current code was initialy taken from [kafkian](https://github.com/DayoOliyide/kafkian), but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers.
+
+NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the [clj-kafka](https://github.com/pingles/clj-kafka/) for Kafka Clusters version 0.8 and 0.9 and [kafkian](https://github.com/DayoOliyide/kafkian) for 0.9 and 10.0.0.0.
+
+== Installation
+
+Add the following to your [Leiningen](http://github.com/technomancy/leiningen) `project.clj`:
+
+== Usage
+
+=== Producer
+
+[source,clojure]
+----
+(require '[clj-kafka-x.producer :as kp])
+
+(with-open [p (kp/producer {"bootstrap.servers" "localhost:9092"}
+                           (kp/string-serializer)
+                           (kp/string-serializer))]
+  @(kp/send p (kp/record "topic-a" "Hola Mundo!")))
+----
+
+=== Consumer
+
+[source,clojure]
+----
+(require '[clj-kafka-x.consumer :as kc])
+
+(with-open [c (kc/consumer {"bootstrap.servers" "localhost:9092"
+                            "group.id" "consumer-id"}
+                            (kc/string-deserializer)
+                            (kc/string-deserializer))]
+  (kc/subscribe c "topic-a")
+  (kc/messages c))
+----
+
+=== Admin
+
+WARNING: Is not working yet!
+
+[source,clojure]
+----
+(require '[clj-kafka-x.admin :as ka])
+
+(def zk-util (ka/zk-utils "localhost:2181"))
+
+(ka/create-topic zk-util "events")
+
+(ka/create-topic zk-util "events2" :partition 3 :replication-factor 3)
+
+(ka/create-topic zk-util "events-store" :topic-conifg {"cleanup.policy" "compact"})
+
+(ka/topic-exists? zk-util "events")
+
+(ka/delete-topic zk-util "events2")
+----
+
+== License
+
+Copyright © 2016
+
+Distributed under the Apache License v 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+
