@@ -1,7 +1,7 @@
-(ns ^{:doc "Clojure interface for Kafka Consumer API. For
-  complete JavaDocs, see:
-  http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
-    clj-kafka-x.consumer
+(ns ^{:doc "Clojure interface for Kafka Consumer API.
+            For complete JavaDocs, see:
+            http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
+clj-kafka-x.consumer
   (:require [clj-kafka-x.data :refer :all])
   (:import java.util.List
            java.util.regex.Pattern
@@ -16,7 +16,8 @@
 (defn consumer
   "Takes a map of config options and returns a `KafkaConsumer` for consuming records from Kafka.
 
-  NOTE `KafkaConsumer` instances are NOT thread-safe, see https://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded
+  NOTE `KafkaConsumer` instances are NOT thread-safe, see
+  https://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded
 
   For more information and available conifg options,
   see: http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/KafkaConsumer.html
@@ -92,8 +93,8 @@
   http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.List)
   "
   [^KafkaConsumer consumer topics & {:keys [assigned-callback revoked-callback]
-                                     :or {assigned-callback (fn [_])
-                                          revoked-callback (fn [_])}}]
+                                     :or   {assigned-callback (fn [_])
+                                            revoked-callback  (fn [_])}}]
   ;;TODO needs to be cleaned up and refactored
   (let [listener (reify ConsumerRebalanceListener
                    (onPartitionsAssigned [_ partitions] (assigned-callback (mapv to-clojure partitions)))
@@ -104,8 +105,8 @@
                  (= Pattern (type topics)) topics
                  (and (sequential? topics) (map? (first topics))) topics
                  :else (throw
-                        (ex-info "Topic should be a string, sequence (of strings or maps) or pattern"
-                                 {:topic topics})))]
+                         (ex-info "Topic should be a string, sequence (of strings or maps) or pattern"
+                                  {:topic topics})))]
 
     (if (and (sequential? topics) (map? (first topics)))
       (do
@@ -136,7 +137,7 @@
   ;;TODO is this clear and readable enough ? refactor?
   (let [auto-subs (.subscription consumer)
         manual-subs (.assignment consumer)
-        subs (reduce #(assoc %1 %2 {:topic %2 :partitions #{}})  {} auto-subs)
+        subs (reduce #(assoc %1 %2 {:topic %2 :partitions #{}}) {} auto-subs)
         reduce-fn (fn [m tp-object]
                     (let [tp (to-clojure tp-object)
                           t (:topic tp)
@@ -145,7 +146,7 @@
                                      (update %1 :partitions conj p)
                                      {:topic t :partitions #{p}}))))]
     (->> (reduce reduce-fn subs manual-subs)
-        (mapv val))))
+         (mapv val))))
 
 
 (defn unsubscribe
@@ -389,7 +390,7 @@
   ;;      :in-sync-replicas [{:id 2, :host \"172.17.0.3\", :port 9093}]}]
 "
   [^KafkaConsumer consumer topic]
-  (mapv to-clojure  (.partitionsFor consumer topic)))
+  (mapv to-clojure (.partitionsFor consumer topic)))
 
 
 (defn pause

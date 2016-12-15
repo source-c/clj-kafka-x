@@ -7,14 +7,15 @@
   (:import [java.util.concurrent Future TimeUnit TimeoutException]
            [org.apache.kafka.clients.producer Callback KafkaProducer ProducerRecord RecordMetadata]
            [org.apache.kafka.common Metric MetricName]
-           [org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer]))
+           (org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer)
+           (java.util Map)))
 
 
 
 (defn- map-future-val
   [^Future fut f]
   (reify
-    java.util.concurrent.Future
+    Future
     (cancel [_ interrupt?] (.cancel fut interrupt?))
     (get [_] (f (.get fut)))
     (get [_ timeout unit] (f (.get fut timeout unit)))
@@ -55,9 +56,9 @@
         (.get)))
   "
 
-  ([^java.util.Map config]
+  ([^Map config]
    (KafkaProducer. config))
-  ([^java.util.Map config ^Serializer key-serializer ^Serializer value-serializer]
+  ([^Map config ^Serializer key-serializer ^Serializer value-serializer]
    (KafkaProducer. config key-serializer value-serializer)))
 
 (defn record

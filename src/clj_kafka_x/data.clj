@@ -2,7 +2,10 @@
   (:import [java.util HashMap Map Properties]
            [org.apache.kafka.clients.consumer ConsumerRecord ConsumerRecords OffsetAndMetadata]
            org.apache.kafka.clients.producer.RecordMetadata
-           [org.apache.kafka.common Metric MetricName Node PartitionInfo TopicPartition]))
+           [org.apache.kafka.common Metric MetricName Node PartitionInfo TopicPartition]
+
+           (kafka.consumer Consumer ConsumerConfig KafkaStream)
+           (kafka.message MessageAndMetadata)))
 
 (defprotocol ToClojure
   ""
@@ -26,6 +29,14 @@
      :offset (.offset x)
      :key (.key x)
      :value (.value x)})
+
+  MessageAndMetadata
+  (to-clojure [x]
+    {:topic (.topic x)
+     :partition (.partition x)
+     :offset (.offset x)
+     :key (.key x)
+     :value (.message x)}) ;; FIME: :value/:message
 
   ConsumerRecords
   (to-clojure [x]
