@@ -7,7 +7,8 @@ clj-kafka-x.consumer
            java.util.regex.Pattern
            [org.apache.kafka.clients.consumer ConsumerRebalanceListener KafkaConsumer OffsetAndMetadata OffsetCommitCallback]
            [org.apache.kafka.common.serialization ByteArrayDeserializer Deserializer StringDeserializer]
-           org.apache.kafka.common.TopicPartition))
+           org.apache.kafka.common.TopicPartition
+           (java.util Map)))
 
 
 (defn string-deserializer [] (StringDeserializer.))
@@ -45,9 +46,9 @@ clj-kafka-x.consumer
     (take 5 (messages c)))
 
   "
-  ([^java.util.Map config]
+  ([^Map config]
    (KafkaConsumer. config))
-  ([^java.util.Map config ^Deserializer key-deserializer ^Deserializer value-deserializer]
+  ([^Map config ^Deserializer key-deserializer ^Deserializer value-deserializer]
    (KafkaConsumer. config key-deserializer value-deserializer)))
 
 

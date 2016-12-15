@@ -1,16 +1,21 @@
 = clj-kafka-x
 
-A Clojure library for the Kafka 0.10.X.X release.
+A Clojure library for the Kafka 0.10.X.X releases.
 
 This library takes it's inspiration and some code from the [clj- kafka](https://github.com/pingles/clj-kafka/) and from the [kafkian](https://github.com/DayoOliyide/kafkian) libraries.
 
-Current code was initially taken from [kafkian](https://github.com/DayoOliyide/kafkian), but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers.
+Current code was initially taken from [kafkian](https://github.com/DayoOliyide/kafkian), but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers. Secondly (and "sad but truth") - it is too hard to rely on external maintainers for code which you're going to actively develop.
 
-NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the [clj-kafka](https://github.com/pingles/clj-kafka/) for Kafka Clusters version 0.8 and 0.9 and [kafkian](https://github.com/DayoOliyide/kafkian) for 0.9 and, may be, 10.0.0.0.
+NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the [clj-kafka](https://github.com/pingles/clj-kafka/) for Kafka Clusters version 0.8 and 0.9 and [kafkian](https://github.com/DayoOliyide/kafkian) for 0.9 and, may be, 0.10.0.0. It is mainly developed for 0.10.0.1 and 0.10.1.0.
 
 == Installation
 
 Add the following to your [Leiningen](http://github.com/technomancy/leiningen) `project.clj`:
+
+[source,clojure]
+----
+[net.tbt-post/clj-kafka-x "0.1.0-SNAPSHOT"]
+----
 
 == Usage
 
@@ -23,7 +28,7 @@ Add the following to your [Leiningen](http://github.com/technomancy/leiningen) `
 (with-open [p (kp/producer {"bootstrap.servers" "localhost:9092"}
                            (kp/string-serializer)
                            (kp/string-serializer))]
-  @(kp/send p (kp/record "topic-a" "Hola Mundo!")))
+  @(kp/send p (kp/record "topic-a" "Hi there!")))
 ----
 
 === Consumer
@@ -39,6 +44,8 @@ Add the following to your [Leiningen](http://github.com/technomancy/leiningen) `
   (kc/subscribe c "topic-a")
   (kc/messages c))
 ----
+
+NOTE: When you use multiple partitions per topic it is required to specify them explicitly when subscribing, i.e. `(kc/subscribe c [{:topic "topic-a" :partitions #{0 1}} {:topic "topic-b" :partitions #{0 1 2}}])`
 
 === Admin
 
@@ -59,6 +66,13 @@ WARNING: Is not working yet!
 (ka/topic-exists? zk-util "events")
 
 (ka/delete-topic zk-util "events2")
+----
+
+== Manual Build
+
+[source,text]
+----
+$ lein install
 ----
 
 == License
