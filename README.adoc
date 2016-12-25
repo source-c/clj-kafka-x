@@ -35,7 +35,7 @@ Add the following to your [Leiningen](http://github.com/technomancy/leiningen) `
 
 [source,clojure]
 ----
-(require '[clj-kafka-x.consumer :as kc])
+(require '[clj-kafka-x.consumers.simple :as kc])
 
 (with-open [c (kc/consumer {"bootstrap.servers" "localhost:9092"
                             "group.id" "consumer-id"}

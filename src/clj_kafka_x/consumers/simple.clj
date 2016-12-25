@@ -1,7 +1,7 @@
 (ns ^{:doc "Clojure interface for Kafka Consumer API.
             For complete JavaDocs, see:
             http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
-clj-kafka-x.consumer
+clj-kafka-x.consumers.simple
   (:require [clj-kafka-x.data :refer :all])
   (:import java.util.List
            java.util.regex.Pattern
