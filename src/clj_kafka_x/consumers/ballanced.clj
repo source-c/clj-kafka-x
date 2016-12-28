@@ -86,3 +86,34 @@
   ([config blist prefix grname]
    (Consumer/createJavaConsumerConnector
      (create-consumer-config config (->zklist blist prefix) grname))))
+
+(defn- shutdown-topic [topic obj]
+  (when-let [inst (:instance obj)]
+    (.shutdown inst))
+  (when-let [pool (:pool obj)]
+    (.shutdown pool))
+  topic)
+
+(defn- run-consumers
+  "
+  Runs consumers for multiple topics
+  Requires:
+   - external atom to store ran consumers
+   - hashmap of topic specs
+  Returns updated atom
+  "
+  [group topics-list storage kafka-spec]
+  (doseq [T (keys topics-list)]
+    (let [{:keys [zkpool zkpref]} kafka-spec
+          topic-spec (get topics-list T)
+          psize (:poolsize topic-spec)
+          tpool (Executors/newFixedThreadPool psize)
+          consumer (create-consumer zkpool zkpref group)]
+      (try (swap! storage merge
+                  {T {:instance (hk/consume-topic
+                                  consumer T
+                                  tpool psize
+                                  (get topics-list T))
+                      :pool     tpool}})
+           (catch Exception e (do (shutdown-topic T {:pool tpool}))))))
+  storage)
