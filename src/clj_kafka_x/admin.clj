@@ -1,6 +1,7 @@
 (ns clj-kafka-x.admin
   (:require [clj-kafka-x.data :refer [map->properties]])
   (:import kafka.admin.AdminUtils
+           kafka.admin.RackAwareMode.Enforced
            kafka.utils.ZkUtils))
 
 (defn zk-utils
@@ -32,7 +33,12 @@
                :or {partitions 1
                     replication-factor 1
                     topic-config nil}}]
-  (AdminUtils/createTopic z-utils topic (int partitions) (int replication-factor) (map->properties topic-config)))
+  (AdminUtils/createTopic z-utils
+                          topic
+                          (int partitions)
+                          (int replication-factor)
+                          (map->properties topic-config)
+                          (Enforced)))
 
 (defn topic-exists?
   "Returns true or false dependant on the existance of the given topic"
