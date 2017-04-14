@@ -2,9 +2,9 @@
 
 A Clojure library for the Kafka 0.10.X.X releases.
 
-This library takes it's inspiration and some code from the https://github.com/pingles/clj-kafka/[clj- kafka] and from the https://github.com/DayoOliyide/kafkian[kafkian] libraries.
+This library takes it's inspiration and some code from the https://github.com/pingles/clj-kafka/[clj-kafka] and from the https://github.com/DayoOliyide/kafkian[kafkian] libraries.
 
-Current code was initially taken from https://github.com/DayoOliyide/kafkian[kafkian], but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers. Secondly (and "sad but truth") - it is too hard to rely on external maintainers for code which you're going to actively develop.
+Current code was initially taken from https://github.com/DayoOliyide/kafkian[kafkian], but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers. Secondly (and "sad but truth") - it is too hard to rely on external maintainers for code which you're going to actively develop or, at least, use in your own production.
 
 NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the https://github.com/pingles/clj-kafka/[clj-kafka] for Kafka Clusters version 0.8 and 0.9 and https://github.com/DayoOliyide/kafkian[kafkian] for 0.9 and, may be, 0.10.0.0. It is mainly developed for 0.10.0.1 and 0.10.1.0.
 
@@ -48,6 +48,34 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `
 ----
 
 NOTE: When you use multiple partitions per topic it is required to specify them explicitly when subscribing, i.e. `(kc/subscribe c [{:topic "topic-a" :partitions #{0 1}} {:topic "topic-b" :partitions #{0 1 2}}])`
+
+.Real-life (almost) example
+[source,clojure]
+----
+(ns buzz.consumer.kafka
+  (:require [clj-kafka-x.consumers.simple :as kc]
+            [clojure.tools.logging :as log]))
+
+(defn processor [msg schema] msg)
+(def schema nil)
+(def config {"bootstrap.servers" "localhost:9092"
+             "group.id" "consumer-id"})
+
+(defn process-message [msg]
+  (let [{:keys [value topic partition offset]} msg
+        processor processor ;; choose one by topic name
+        schema schema]      ;; choose one by topic name
+    (if (fn? processor) (processor value schema) value)))
+
+(defn consume []
+  (with-open [c (kc/consumer config
+                             (kc/byte-array-deserializer)
+                             (kc/byte-array-deserializer))]
+    (kc/subscribe c (config/kafka-topics))
+    (let [pool (kc/messages c)]
+      (doseq [message pool]
+        (log/warn (process-message message))))))
+----
 
 === Admin
 
