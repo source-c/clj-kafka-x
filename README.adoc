@@ -2,15 +2,17 @@
 
 A Clojure library for the Kafka 0.10.X.X releases.
 
-This library takes it's inspiration and some code from the [clj- kafka](https://github.com/pingles/clj-kafka/) and from the [kafkian](https://github.com/DayoOliyide/kafkian) libraries.
+This library takes it's inspiration and some code from the https://github.com/pingles/clj-kafka/[clj- kafka] and from the https://github.com/DayoOliyide/kafkian[kafkian] libraries.
 
-Current code was initially taken from [kafkian](https://github.com/DayoOliyide/kafkian), but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers. Secondly (and "sad but truth") - it is too hard to rely on external maintainers for code which you're going to actively develop.
+Current code was initially taken from https://github.com/DayoOliyide/kafkian[kafkian], but since Apache Kafka has very ugly backward compatibilities and developing this code goes break the chain -- it was not forked normally, but splitted and refactored to dedicated library with many thanks to previous developers. Secondly (and "sad but truth") - it is too hard to rely on external maintainers for code which you're going to actively develop.
 
-NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the [clj-kafka](https://github.com/pingles/clj-kafka/) for Kafka Clusters version 0.8 and 0.9 and [kafkian](https://github.com/DayoOliyide/kafkian) for 0.9 and, may be, 0.10.0.0. It is mainly developed for 0.10.0.1 and 0.10.1.0.
+NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10. Use the https://github.com/pingles/clj-kafka/[clj-kafka] for Kafka Clusters version 0.8 and 0.9 and https://github.com/DayoOliyide/kafkian[kafkian] for 0.9 and, may be, 0.10.0.0. It is mainly developed for 0.10.0.1 and 0.10.1.0.
+
+image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
 
 == Installation
 
-Add the following to your [Leiningen](http://github.com/technomancy/leiningen) `project.clj`:
+Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `project.clj`:
 
 [source,clojure]
 ----
@@ -79,5 +81,5 @@ $ lein install
 
 Copyright © 2016-2017
 
-Distributed under the Apache License v 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
 
