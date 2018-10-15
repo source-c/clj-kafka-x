@@ -1,19 +1,6 @@
 = clj-kafka-x
 
-A Clojure library for the Kafka v1.0.0 release.
-
-This library takes it's inspiration and some code from the
-https://github.com/pingles/clj-kafka/[clj-kafka]
-and from the https://github.com/DayoOliyide/kafkian[kafkian] libraries.
-
-Current code was initially taken from
-https://github.com/DayoOliyide/kafkian[kafkian], but since Apache Kafka
-has very ugly backward compatibilities and developing this code goes
-break the chain -- it was not forked normally, but splitted and
-refactored to dedicated library with many thanks to previous developers.
-Secondly (and "sad but truth") - it is too hard to rely on external
-maintainers for code which you're going to actively develop or,
-at least, use in your own production.
+A Clojure library for the Apache Kafka stream-processing software platform.
 
 NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10.
 Use the https://github.com/pingles/clj-kafka/[clj-kafka] for
@@ -30,7 +17,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
 
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.3.0-SNAPSHOT"]
+[net.tbt-post/clj-kafka-x "0.3.0"]
 ----
 
 == Usage
@@ -125,7 +112,7 @@ $ lein install
 
 == License
 
-Copyright © 2016-2017
+Copyright © 2016-2018
 
 Distributed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
