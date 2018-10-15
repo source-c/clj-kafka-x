@@ -84,7 +84,7 @@ to specify them explicitly when subscribing, i.e.
 
 === Admin
 
-WARNING: Is not working yet!
+WARNING: Some code may not work!
 
 [source,clojure]
 ----
