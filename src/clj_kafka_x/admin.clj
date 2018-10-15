@@ -1,15 +1,15 @@
 (ns clj-kafka-x.admin
   (:require [clj-kafka-x.data :refer [map->properties]])
   (:import kafka.admin.AdminUtils
-           kafka.admin.RackAwareMode.Enforced
+           (kafka.admin RackAwareMode RackAwareMode$Enforced$)
            kafka.utils.ZkUtils))
 
 (defn zk-utils
   ""
   [zk-url & {:keys [session-timeout connection-timeout security-enabled]
-                          :or {session-timeout 1000
-                               connection-timeout 1000
-                               security-enabled false}}]
+             :or   {session-timeout    1000
+                    connection-timeout 1000
+                    security-enabled   false}}]
   (ZkUtils/apply zk-url session-timeout connection-timeout (Boolean/valueOf security-enabled)))
 
 
@@ -30,15 +30,15 @@
   (create-topic z-utils \"topic-b\" :topic-config {\"cleanup.policy\" \"compact\"})
   "
   [z-utils topic & {:keys [partitions replication-factor topic-config]
-               :or {partitions 1
-                    replication-factor 1
-                    topic-config nil}}]
+                    :or   {partitions         1
+                           replication-factor 1
+                           topic-config       nil}}]
   (AdminUtils/createTopic z-utils
                           topic
                           (int partitions)
                           (int replication-factor)
                           (map->properties topic-config)
-                          (Enforced)))
+                          RackAwareMode$Enforced$))
 
 (defn topic-exists?
   "Returns true or false dependant on the existance of the given topic"

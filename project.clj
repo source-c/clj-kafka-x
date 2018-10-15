@@ -1,4 +1,4 @@
-(defproject net.tbt-post/clj-kafka-x "0.3.0"
+(defproject net.tbt-post/clj-kafka-x "0.3.1"
   :description "A Clojure wrapper for Apache Kafka v2.0.0 client"
   :url "https://github.com/source-c/clj-kafka-x"
   :license {:name "Apache License 2.0"

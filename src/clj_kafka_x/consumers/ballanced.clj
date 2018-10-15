@@ -1,12 +1,9 @@
 (ns clj-kafka-x.consumers.ballanced
   (:require [clojure.string :refer [join]])
   (:import (java.util.concurrent Executors)
-           (kafka.consumer Consumer ConsumerConfig)
-           (org.apache.kafka.clients.producer KafkaProducer)
+           (org.apache.kafka.clients.consumer KafkaConsumer Consumer ConsumerConfig ConsumerRecords)
            (java.util Properties)
-           (kafka.consumer KafkaStream)
-           (clojure.lang PersistentArrayMap)
-           (org.apache.kafka.clients.producer ProducerRecord)))
+           (clojure.lang PersistentArrayMap)))
 
 (defrecord KafkaMessage [topic partition offset key message])
 
@@ -18,7 +15,7 @@
   ([stream thread-num spec]
    (consume-messages stream thread-num spec (:id spec)))
   ([stream thread-num spec id]
-   (let [it (.iterator ^KafkaStream stream)]
+   (let [it (.iterator ^ConsumerRecords stream)]
      (while (.hasNext it)
        (let [msg (.next it)
              kmsg (KafkaMessage.
@@ -26,7 +23,7 @@
                     (.partition msg)
                     (.offset msg)
                     (.key msg)
-                    (.message msg))
+                    (.value msg))
              prc @(resolve (:processor spec))]
 
          (process-msg prc kmsg id)))
@@ -84,7 +81,7 @@
   ([config blist prefix]
    (create-consumer blist prefix (:group (:consumer config))))
   ([config blist prefix grname]
-   (Consumer/createJavaConsumerConnector
+   (KafkaConsumer.
      (create-consumer-config config (->zklist blist prefix) grname))))
 
 (defn- shutdown-topic [topic obj]
@@ -110,7 +107,7 @@
           tpool (Executors/newFixedThreadPool psize)
           consumer (create-consumer zkpool zkpref group)]
       (try (swap! storage merge
-                  {T {:instance (hk/consume-topic
+                  {T {:instance (consume-topic
                                   consumer T
                                   tpool psize
                                   (get topics-list T))
