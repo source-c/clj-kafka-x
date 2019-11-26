@@ -10,6 +10,8 @@ It is mainly developed for 0.10.0.1 and 0.10.1.0.
 
 image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
 
+ATTN: v0.4.0 may be partially (ot even fully!) incompatible with some versions of other libraries that use NIO!
+
 == Installation
 
 Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
