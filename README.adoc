@@ -3,6 +3,7 @@
 A Clojure library for the Apache Kafka stream-processing software platform.
 
 NOTE: This version is well tested with Kafka v2.2.0
+
 image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
 
 CAUTION: `v0.4.0` may be partially (or even fully!) incompatible with some versions of other libraries that use NIO!
