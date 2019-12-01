@@ -1,12 +1,24 @@
 = clj-kafka-x
 
-A Clojure library for the Apache Kafka stream-processing software platform.
+A Clojure library for the Apache Kafka (distributed stream-processing software platform). 
 
-NOTE: This version is well tested with Kafka v2.2.0
+Uses KF protocol and not rely on ZooKeeper. 
 
-image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
+NOTE: v0.4.0 version is well tested with Kafka v2.2.x and 2.3.0 with native drivers on Scala 2.11 and 2.12. Still contains zookeeper as a dependency.
+
+Tryes to be as lightweigh as possible, thus depends only on 
+
+- `org.apache.kafka/kafka_2.12 "2.3.0"`
+- `org.apache.kafka/kafka-clients "2.3.0"`
+- `org.apache.zookeeper/zookeeper "3.5.5"`
+
+but excluding `jms`,`jmx*` and logging.
 
 CAUTION: `v0.4.0` may be partially (or even fully!) incompatible with some versions of other libraries that use NIO!
+
+Current version is:
+
+image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
 
 == Installation
 
