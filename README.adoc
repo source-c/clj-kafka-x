@@ -80,27 +80,6 @@ to specify them explicitly when subscribing, i.e.
         (log/warn (process-message message))))))
 ----
 
-=== Admin
-
-WARNING: Some code may not work!
-
-[source,clojure]
-----
-(require '[clj-kafka-x.admin :as ka])
-
-(def zk-util (ka/zk-utils "localhost:2181"))
-
-(ka/create-topic zk-util "events")
-
-(ka/create-topic zk-util "events2" :partition 3 :replication-factor 3)
-
-(ka/create-topic zk-util "events-store" :topic-conifg {"cleanup.policy" "compact"})
-
-(ka/topic-exists? zk-util "events")
-
-(ka/delete-topic zk-util "events2")
-----
-
 == Manual Build
 
 [source,text]
