@@ -2,7 +2,7 @@
 
 A Clojure library for the Apache Kafka (distributed stream-processing software platform). 
 
-Uses KF protocol and not rely on ZooKeeper. 
+Uses KF protocol and does not rely on ZooKeeper. 
 
 NOTE: v0.4.0 version is well tested with Kafka v2.2.x and 2.3.0 with native drivers on Scala 2.11 and 2.12. Still contains zookeeper as a dependency.
 
