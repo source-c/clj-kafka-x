@@ -2,12 +2,7 @@
 
 A Clojure library for the Apache Kafka stream-processing software platform.
 
-NOTE: This library is *NOT* compatible with Kafka Clusters below version 0.10.
-Use the https://github.com/pingles/clj-kafka/[clj-kafka] for
-Kafka Clusters version 0.8 and 0.9 and
-https://github.com/DayoOliyide/kafkian[kafkian] for 0.9 and, may be, 0.10.0.0.
-It is mainly developed for 0.10.0.1 and 0.10.1.0.
-
+NOTE: This version is well tested with Kafka v2.2.0
 image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
 
 CAUTION: `v0.4.0` may be partially (or even fully!) incompatible with some versions of other libraries that use NIO!
