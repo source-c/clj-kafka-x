@@ -100,6 +100,22 @@ to specify them explicitly when subscribing, i.e.
         (log/warn (process-message message))))))
 ----
 
+you may also use specific timeouts form
+
+[source, clojoure]
+----
+(defn- consume [instance process-message]
+  (when-let [co (kc/consumer config
+                             (kc/byte-array-deserializer)
+                             (kc/byte-array-deserializer))
+             messages (kc/messages
+                        co
+                        :timeout (:request-timeout-ms (config/kafka-settings)))]
+    (doall (map process-message messages))))
+----
+
+message count per poll execution may be specified by `max.poll.records` field of configuration
+
 == Manual Build
 
 [source,text]
@@ -109,7 +125,7 @@ $ lein install
 
 == License
 
-Copyright © 2016-2019
+Copyright © 2016-2020
 
 Distributed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
