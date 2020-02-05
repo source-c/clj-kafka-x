@@ -102,7 +102,7 @@ to specify them explicitly when subscribing, i.e.
 
 you may also use specific timeouts form
 
-[source, clojoure]
+[source, clojure]
 ----
 (defn- consume [instance process-message]
   (when-let [co (kc/consumer config
