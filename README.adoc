@@ -110,7 +110,7 @@ you may also use specific timeouts form
                              (kc/byte-array-deserializer))
              messages (kc/messages
                         co
-                        :timeout (:request-timeout-ms (config/kafka-settings)))]
+                        :timeout (:request-timeout-ms config))]
     (doall (map process-message messages))))
 ----
 
