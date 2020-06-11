@@ -5,7 +5,7 @@ clj-kafka-x.consumers.simple
   (:require [clj-kafka-x.data :refer :all])
   (:import java.util.List
            java.util.regex.Pattern
-           [org.apache.kafka.clients.consumer ConsumerRebalanceListener KafkaConsumer OffsetAndMetadata OffsetCommitCallback]
+           [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetAndMetadata OffsetCommitCallback]
            [org.apache.kafka.common.serialization ByteArrayDeserializer Deserializer StringDeserializer]
            org.apache.kafka.common.TopicPartition
            (java.util Map)))
@@ -93,7 +93,7 @@ clj-kafka-x.consumers.simple
   http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.regex.Pattern,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
   http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.List)
   "
-  [^KafkaConsumer consumer topics & {:keys [assigned-callback revoked-callback]
+  [^Consumer consumer topics & {:keys [assigned-callback revoked-callback]
                                      :or   {assigned-callback (fn [_])
                                             revoked-callback  (fn [_])}}]
   ;;TODO needs to be cleaned up and refactored
@@ -134,7 +134,7 @@ clj-kafka-x.consumers.simple
   ;;     {:topic \"topic-b\", :partitions #{0 1 2}},
   ;;     {:topic \"topic-c\", :partitions #{}}]
   "
-  [^KafkaConsumer consumer]
+  [^Consumer consumer]
   ;;TODO is this clear and readable enough ? refactor?
   (let [auto-subs (.subscription consumer)
         manual-subs (.assignment consumer)
@@ -153,7 +153,7 @@ clj-kafka-x.consumers.simple
 (defn unsubscribe
   "Unsubcribes the consumer from any subscribed topics and/or partitions.
    It works for subscriptions carried out via subscribe-to-topics or subscribe-to-partitions functions"
-  [^KafkaConsumer consumer]
+  [^Consumer consumer]
   (.unsubscribe consumer))
 
 (defn seek
@@ -190,9 +190,9 @@ clj-kafka-x.consumers.simple
   ;; => nil
 
   "
-  ([^KafkaConsumer consumer topic partition offset]
+  ([^Consumer consumer topic partition offset]
    (seek consumer (vector {:topic topic :partition partition}) offset))
-  ([^KafkaConsumer consumer tp-seq offset]
+  ([^Consumer consumer tp-seq offset]
    (let [tp-class-seq (map map->topic-partition tp-seq)
          tp-class-array (into-array TopicPartition tp-class-seq)]
      (cond
@@ -229,7 +229,7 @@ clj-kafka-x.consumers.simple
   ;;      :value \"Count Zero says 3 at Fri Mar 11 14:34:32 GMT 2016\"}]
 
   "
-  [^KafkaConsumer consumer & {:keys [timeout] :or {timeout 1000}}]
+  [^Consumer consumer & {:keys [timeout] :or {timeout 1000}}]
 
   (let [consumer-records (.poll consumer timeout)]
     (to-clojure consumer-records)))
@@ -272,13 +272,13 @@ clj-kafka-x.consumers.simple
                                    (println \"Commits passed for \" offsets))))
   ;; => nil
   "
-  ([^KafkaConsumer consumer] (.commitAsync consumer))
-  ([^KafkaConsumer consumer offset-commit-fn]
+  ([^Consumer consumer] (.commitAsync consumer))
+  ([^Consumer consumer offset-commit-fn]
    (let [callback (reify OffsetCommitCallback
                     (onComplete [_ offsets exception]
                       (offset-commit-fn (tp-om-map->map offsets) exception)))]
      (.commitAsync consumer callback)))
-  ([^KafkaConsumer consumer topic-partition-offsets-metadata offset-commit-fn]
+  ([^Consumer consumer topic-partition-offsets-metadata offset-commit-fn]
    (let [callback (reify OffsetCommitCallback
                     (onComplete [_ offsets exception]
                       (offset-commit-fn (tp-om-map->map offsets) exception)))
@@ -306,8 +306,8 @@ clj-kafka-x.consumers.simple
   (commit-sync consumer tp-om)
   ;; => nil
   "
-  ([^KafkaConsumer consumer] (.commitSync consumer))
-  ([^KafkaConsumer consumer topic-partitions-offsets-metadata]
+  ([^Consumer consumer] (.commitSync consumer))
+  ([^Consumer consumer topic-partitions-offsets-metadata]
    (let [tp-om-map (map->tp-om-map topic-partitions-offsets-metadata)]
      (.commitSync consumer tp-om-map))))
 
@@ -323,7 +323,7 @@ clj-kafka-x.consumers.simple
   (last-committed-offset consumer {:topic \"topic-a\" :partition 2})
   ;; => {:offset 10, :metadata \"Metadata set during commit\"}
   "
-  [^KafkaConsumer consumer tp]
+  [^Consumer consumer tp]
   (->> tp
        map->topic-partition
        (.committed consumer)
@@ -362,7 +362,7 @@ clj-kafka-x.consumers.simple
   ;;      :replicas [{:id 2, :host \"172.17.0.3\", :port 9093}],
   ;;      :in-sync-replicas [{:id 2, :host \"172.17.0.3\", :port 9093}]}]}
   "
-  [^KafkaConsumer consumer]
+  [^Consumer consumer]
   (str-pi-map->map (.listTopics consumer)))
 
 (defn list-all-partitions
@@ -390,7 +390,7 @@ clj-kafka-x.consumers.simple
   ;;      :replicas [{:id 2, :host \"172.17.0.3\", :port 9093}],
   ;;      :in-sync-replicas [{:id 2, :host \"172.17.0.3\", :port 9093}]}]
 "
-  [^KafkaConsumer consumer topic]
+  [^Consumer consumer topic]
   (mapv to-clojure (.partitionsFor consumer topic)))
 
 
@@ -404,7 +404,7 @@ clj-kafka-x.consumers.simple
   (pause consumer {:topic \"topic-a\" :partition 2}
                   {:topic \"topic-b\" :partition 0})
   "
-  [^KafkaConsumer consumer tp-seq]
+  [^Consumer consumer tp-seq]
   (->> (map map->topic-partition tp-seq)
        (into-array TopicPartition)
        (.pause consumer)))
@@ -420,7 +420,7 @@ clj-kafka-x.consumers.simple
   (resume consumer {:topic \"topic-a\" :partition 2}
                    {:topic \"topic-b\" :partition 0})
   "
-  [^KafkaConsumer consumer tp-seq]
+  [^Consumer consumer tp-seq]
   (->> (map map->topic-partition tp-seq)
        (into-array TopicPartition)
        (.resume consumer)))
@@ -445,5 +445,5 @@ clj-kafka-x.consumers.simple
   ;;      :tags {\"client-id\" \"consumer-3\"},
   ;;      :value 0.0}]
   "
-  [^KafkaConsumer consumer]
+  [^Consumer consumer]
   (metrics->map (.metrics consumer)))

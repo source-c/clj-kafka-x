@@ -5,7 +5,7 @@
   (:refer-clojure :exclude [send flush])
   (:require [clj-kafka-x.data :refer :all])
   (:import [java.util.concurrent Future TimeUnit TimeoutException]
-           [org.apache.kafka.clients.producer Callback KafkaProducer ProducerRecord RecordMetadata]
+           [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord RecordMetadata]
            [org.apache.kafka.common Metric MetricName]
            (org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer)
            (java.util Map)))
@@ -95,10 +95,10 @@
   ;; => #object[string representation of future object]
   ;; Metadata-> {:topic topic-unknown, :partition 4, :offset 1} Exception-> nil
   "
-  ([^KafkaProducer producer record]
+  ([^Producer producer record]
    (let [fut (.send producer record)]
      (map-future-val fut to-clojure)))
-  ([^KafkaProducer producer record callback]
+  ([^Producer producer record callback]
    (let [fut (.send producer record (reify Callback
                                       (onCompletion [_ metadata exception]
                                         (callback (and metadata (to-clojure metadata)) exception))))]
@@ -106,7 +106,7 @@
 
 (defn flush
   "See: http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#flush()"
-  [^KafkaProducer producer]
+  [^Producer producer]
   (.flush producer))
 
 (defn close
@@ -116,9 +116,9 @@
 
   - http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close()
   - http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close(long,%20java.util.concurrent.TimeUnit)"
-  ([^KafkaProducer producer]
+  ([^Producer producer]
    (.close producer))
-  ([^KafkaProducer producer timeout-ms]
+  ([^Producer producer timeout-ms]
    (.close producer timeout-ms TimeUnit/MILLISECONDS)))
 
 (defn partitions
@@ -143,7 +143,7 @@
   ;;      :in-sync-replicas [{:id 1, :host \"172.17.0.4\", :port 9092}
   ;;                         {:id 2, :host \"172.17.0.3\", :port 9093}]}]
   "
-  [^KafkaProducer producer topic]
+  [^Producer producer topic]
   (mapv to-clojure (.partitionsFor producer topic)))
 
 (defn metrics
@@ -170,6 +170,6 @@
   ;;      :tags {\"client-id\" \"producer-2\", \"node-id\" \"node-3\"},
   ;;      :value 0.23866348448687352}]
   "
-  [^KafkaProducer producer]
+  [^Producer producer]
   (metrics->map (.metrics producer))
   )
