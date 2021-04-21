@@ -27,15 +27,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
 
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.4.1"]
-----
-
-or with explicit NIO
-
-[source, clojure]
-----
-[net.tbt-post/clj-kafka-x "0.4.1"]
-[io.netty/netty-all "4.1.45.Final"]
+[net.tbt-post/clj-kafka-x "0.5.0"]
 ----
 
 == Usage
