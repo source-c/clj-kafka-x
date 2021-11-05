@@ -8,9 +8,9 @@ NOTE: Still contains zookeeper as a dependency.
 
 Tries to be as lightweigh as possible thus depends only on
 
-- `org.apache.kafka/kafka_2.12 "2.8.0"`
-- `org.apache.kafka/kafka-clients "2.8.0"`
-- `org.apache.zookeeper/zookeeper "3.7.20"`
+- `org.apache.kafka/kafka_2.12 "3.0.0"`
+- `org.apache.kafka/kafka-clients "3.0.0"`
+- `org.apache.zookeeper/zookeeper "3.7.0"`
 
 but excluding `jms`,`jmx*` and logging.
 
@@ -34,7 +34,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
 
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.5.1"]
+[net.tbt-post/clj-kafka-x "0.6.0"]
 ----
 
 == Usage
