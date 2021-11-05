@@ -1,18 +1,75 @@
 (ns ^{:doc "Clojure interface for Kafka Consumer API.
             For complete JavaDocs, see:
             http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
-clj-kafka-x.consumers.simple
+  clj-kafka-x.consumers.simple
   (:require [clj-kafka-x.data :refer :all])
   (:import java.util.List
            java.util.regex.Pattern
            [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetAndMetadata OffsetCommitCallback]
            [org.apache.kafka.common.serialization ByteArrayDeserializer Deserializer StringDeserializer]
            org.apache.kafka.common.TopicPartition
-           (java.util Map)))
+           (java.util Map)
+           (clojure.lang IMapEntry MapEntry IRecord)))
 
 
 (defn string-deserializer [] (StringDeserializer.))
 (defn byte-array-deserializer [] (ByteArrayDeserializer.))
+
+(defn- walk
+  [inner outer form]
+  (cond
+    (list? form) (outer (apply list (map inner form)))
+    (instance? IMapEntry form)
+    (outer (MapEntry/create (inner (key form)) (inner (val form))))
+    (seq? form) (outer (doall (map inner form)))
+    (instance? IRecord form)
+    (outer (reduce (fn [r x] (conj r (inner x))) form form))
+    (coll? form) (outer (into (empty form) (map inner form)))
+    :else (outer form)))
+
+(defn- postwalk
+  [f form]
+  (walk (partial postwalk f) f form))
+
+(defn- stringify-keys
+  [m]
+  (let [f (fn [[k v]] (if (keyword? k) [(name k) v] [k v]))]
+    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+
+(defn update-in-when
+  [m k f & args]
+  (if (not= ::not-found (get-in m k ::not-found))
+    (apply update-in m k f args)
+    m))
+
+(defn- int! [v]
+  (if (number? v)
+    (int v)
+    (condp instance? v
+      String (try
+               (-> v str Integer/parseInt)
+               (catch NumberFormatException _ nil))
+      nil)))
+
+(defn- safe-config ^Map [^Map config]
+  (if (map? config)
+    (-> config
+        stringify-keys
+        (update-in-when ["fetch.min.bytes"] int!)
+        (update-in-when ["fetch.max.bytes"] int!)
+        (update-in-when ["fetch.max.wait.ms"] int!)
+        (update-in-when ["heartbeat.interval.ms"] int!)
+        (update-in-when ["max.partition.fetch.bytes"] int!)
+        (update-in-when ["session.timeout.ms"] int!)
+        (update-in-when ["max.poll.interval.ms"] int!)
+        (update-in-when ["max.poll.records"] int!)
+        (update-in-when ["receive.buffer.bytes"] int!)
+        (update-in-when ["request.timeout.ms"] int!)
+        (update-in-when ["send.buffer.bytes"] int!)
+        (update-in-when ["auto.commit.interval.ms"] int!)
+        (update-in-when ["fetch.max.wait.ms"] int!)
+        (update-in-when ["metrics.num.samples"] int!))
+    {}))
 
 (defn consumer
   "Takes a map of config options and returns a `KafkaConsumer` for consuming records from Kafka.
@@ -47,9 +104,9 @@ clj-kafka-x.consumers.simple
 
   "
   ([^Map config]
-   (KafkaConsumer. config))
+   (KafkaConsumer. (safe-config config)))
   ([^Map config ^Deserializer key-deserializer ^Deserializer value-deserializer]
-   (KafkaConsumer. config key-deserializer value-deserializer)))
+   (KafkaConsumer. (safe-config config) key-deserializer value-deserializer)))
 
 
 (defn subscribe
@@ -94,8 +151,8 @@ clj-kafka-x.consumers.simple
   http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.List)
   "
   [^Consumer consumer topics & {:keys [assigned-callback revoked-callback]
-                                     :or   {assigned-callback (fn [_])
-                                            revoked-callback  (fn [_])}}]
+                                :or   {assigned-callback (fn [_])
+                                       revoked-callback  (fn [_])}}]
   ;;TODO needs to be cleaned up and refactored
   (let [listener (reify ConsumerRebalanceListener
                    (onPartitionsAssigned [_ partitions] (assigned-callback (mapv to-clojure partitions)))
