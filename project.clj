@@ -10,4 +10,4 @@
                                org.slf4j/slf4j-log4j12]]
                  [org.apache.zookeeper/zookeeper "3.7.0"
                   :exclusions [org.slf4j/slf4j-log4j12]]
-                 [org.apache.kafka/kafka-clients "2.8.0"]])
+                 [org.apache.kafka/kafka-clients "3.0.0"]])
