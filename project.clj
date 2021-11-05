@@ -3,7 +3,7 @@
   :url "https://github.com/source-c/clj-kafka-x"
   :license {:name "Apache License 2.0"
             :url  "http://www.apache.org/licenses/LICENSE-2.0"}
-  :dependencies [[org.apache.kafka/kafka_2.12 "2.8.0"
+  :dependencies [[org.apache.kafka/kafka_2.12 "3.0.0"
                   :exclusions [javax.jms/jms
                                com.sun.jdmk/jmxtools
                                com.sun.jmx/jmxri
