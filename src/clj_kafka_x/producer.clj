@@ -5,13 +5,13 @@
   (:refer-clojure :exclude [send flush])
   (:require [clj-kafka-x.data :refer :all]
             [clj-kafka-x.impl.helpers :refer :all])
-  (:import [java.util.concurrent Future TimeUnit]
-           [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord]
+  (:import [java.util.concurrent Future]
+           [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord ProducerConfig]
            (org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer)
            (java.util Map)
            (java.time Duration)))
 
-
+(def ^:private config-def (ProducerConfig/configDef))
 
 (defn- map-future-val
   [^Future fut f]
@@ -22,8 +22,6 @@
     (get [_ timeout unit] (f (.get fut timeout unit)))
     (isCancelled [_] (.isCancelled fut))
     (isDone [_] (.isDone fut))))
-
-
 
 (defn string-serializer [] (StringSerializer.))
 (defn byte-array-serializer [] (ByteArraySerializer.))
@@ -56,11 +54,10 @@
     (-> (send p (record \"topic-a\" \"Hello World\"))
         (.get)))
   "
-
   ([^Map config]
-   (KafkaProducer. (safe-config config)))
+   (KafkaProducer. ^Map (coerce-config config-def config)))
   ([^Map config ^Serializer key-serializer ^Serializer value-serializer]
-   (KafkaProducer. (safe-config config) key-serializer value-serializer)))
+   (KafkaProducer. ^Map (coerce-config config-def config) key-serializer value-serializer)))
 
 (defn record
   "Return a record that can be published to Kafka using [[send]]."
