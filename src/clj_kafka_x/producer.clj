@@ -1,14 +1,15 @@
 (ns ^{:doc "Clojure interface for Kafka Producer API. For
   complete JavaDocs, see:
   http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/producer/package-summary.html"}
-    clj-kafka-x.producer
+  clj-kafka-x.producer
   (:refer-clojure :exclude [send flush])
   (:require [clj-kafka-x.data :refer :all]
             [clj-kafka-x.impl.helpers :refer :all])
   (:import [java.util.concurrent Future TimeUnit]
            [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord]
            (org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer)
-           (java.util Map)))
+           (java.util Map)
+           (java.time Duration)))
 
 
 
@@ -59,7 +60,7 @@
   ([^Map config]
    (KafkaProducer. (safe-config config)))
   ([^Map config ^Serializer key-serializer ^Serializer value-serializer]
-   (KafkaProducer. config key-serializer value-serializer)))
+   (KafkaProducer. (safe-config config) key-serializer value-serializer)))
 
 (defn record
   "Return a record that can be published to Kafka using [[send]]."
@@ -119,7 +120,7 @@
   ([^Producer producer]
    (.close producer))
   ([^Producer producer timeout-ms]
-   (.close producer timeout-ms TimeUnit/MILLISECONDS)))
+   (.close producer (Duration/ofMillis timeout-ms))))
 
 (defn partitions
   "Returns a sequence of maps which represent information about each partition of the
@@ -171,5 +172,4 @@
   ;;      :value 0.23866348448687352}]
   "
   [^Producer producer]
-  (metrics->map (.metrics producer))
-  )
+  (metrics->map (.metrics producer)))
