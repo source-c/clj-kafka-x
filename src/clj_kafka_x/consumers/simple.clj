@@ -5,12 +5,13 @@
   (:require [clj-kafka-x.data :refer :all]
             [clj-kafka-x.impl.helpers :refer :all])
   (:import java.util.regex.Pattern
-           [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetCommitCallback]
+           [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetCommitCallback ConsumerConfig]
            [org.apache.kafka.common.serialization ByteArrayDeserializer Deserializer StringDeserializer]
            org.apache.kafka.common.TopicPartition
            (java.util Map Collection)
            (java.time Duration)))
 
+(def ^:private config-def (ConsumerConfig/configDef))
 
 (defn string-deserializer [] (StringDeserializer.))
 (defn byte-array-deserializer [] (ByteArrayDeserializer.))
@@ -48,9 +49,9 @@
 
   "
   ([^Map config]
-   (KafkaConsumer. (safe-config config)))
+   (KafkaConsumer. ^Map (coerce-config config-def config)))
   ([^Map config ^Deserializer key-deserializer ^Deserializer value-deserializer]
-   (KafkaConsumer. (safe-config config) key-deserializer value-deserializer)))
+   (KafkaConsumer. ^Map (coerce-config config-def config) key-deserializer value-deserializer)))
 
 
 (defn subscribe
