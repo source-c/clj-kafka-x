@@ -3,10 +3,10 @@
   http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/producer/package-summary.html"}
     clj-kafka-x.producer
   (:refer-clojure :exclude [send flush])
-  (:require [clj-kafka-x.data :refer :all])
-  (:import [java.util.concurrent Future TimeUnit TimeoutException]
-           [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord RecordMetadata]
-           [org.apache.kafka.common Metric MetricName]
+  (:require [clj-kafka-x.data :refer :all]
+            [clj-kafka-x.impl.helpers :refer :all])
+  (:import [java.util.concurrent Future TimeUnit]
+           [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord]
            (org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer)
            (java.util Map)))
 
@@ -57,7 +57,7 @@
   "
 
   ([^Map config]
-   (KafkaProducer. config))
+   (KafkaProducer. (safe-config config)))
   ([^Map config ^Serializer key-serializer ^Serializer value-serializer]
    (KafkaProducer. config key-serializer value-serializer)))
 

@@ -2,74 +2,18 @@
             For complete JavaDocs, see:
             http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/consumer/package-summary.html"}
   clj-kafka-x.consumers.simple
-  (:require [clj-kafka-x.data :refer :all])
-  (:import java.util.List
-           java.util.regex.Pattern
-           [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetAndMetadata OffsetCommitCallback]
+  (:require [clj-kafka-x.data :refer :all]
+            [clj-kafka-x.impl.helpers :refer :all])
+  (:import java.util.regex.Pattern
+           [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetCommitCallback]
            [org.apache.kafka.common.serialization ByteArrayDeserializer Deserializer StringDeserializer]
            org.apache.kafka.common.TopicPartition
-           (java.util Map)
-           (clojure.lang IMapEntry MapEntry IRecord)))
+           (java.util Map Collection)
+           (java.time Duration)))
 
 
 (defn string-deserializer [] (StringDeserializer.))
 (defn byte-array-deserializer [] (ByteArrayDeserializer.))
-
-(defn- walk
-  [inner outer form]
-  (cond
-    (list? form) (outer (apply list (map inner form)))
-    (instance? IMapEntry form)
-    (outer (MapEntry/create (inner (key form)) (inner (val form))))
-    (seq? form) (outer (doall (map inner form)))
-    (instance? IRecord form)
-    (outer (reduce (fn [r x] (conj r (inner x))) form form))
-    (coll? form) (outer (into (empty form) (map inner form)))
-    :else (outer form)))
-
-(defn- postwalk
-  [f form]
-  (walk (partial postwalk f) f form))
-
-(defn- stringify-keys
-  [m]
-  (let [f (fn [[k v]] (if (keyword? k) [(name k) v] [k v]))]
-    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
-
-(defn update-in-when
-  [m k f & args]
-  (if (not= ::not-found (get-in m k ::not-found))
-    (apply update-in m k f args)
-    m))
-
-(defn- int! [v]
-  (if (number? v)
-    (int v)
-    (condp instance? v
-      String (try
-               (-> v str Integer/parseInt)
-               (catch NumberFormatException _ nil))
-      nil)))
-
-(defn- safe-config ^Map [^Map config]
-  (if (map? config)
-    (-> config
-        stringify-keys
-        (update-in-when ["fetch.min.bytes"] int!)
-        (update-in-when ["fetch.max.bytes"] int!)
-        (update-in-when ["fetch.max.wait.ms"] int!)
-        (update-in-when ["heartbeat.interval.ms"] int!)
-        (update-in-when ["max.partition.fetch.bytes"] int!)
-        (update-in-when ["session.timeout.ms"] int!)
-        (update-in-when ["max.poll.interval.ms"] int!)
-        (update-in-when ["max.poll.records"] int!)
-        (update-in-when ["receive.buffer.bytes"] int!)
-        (update-in-when ["request.timeout.ms"] int!)
-        (update-in-when ["send.buffer.bytes"] int!)
-        (update-in-when ["auto.commit.interval.ms"] int!)
-        (update-in-when ["fetch.max.wait.ms"] int!)
-        (update-in-when ["metrics.num.samples"] int!))
-    {}))
 
 (defn consumer
   "Takes a map of config options and returns a `KafkaConsumer` for consuming records from Kafka.
@@ -157,14 +101,14 @@
   (let [listener (reify ConsumerRebalanceListener
                    (onPartitionsAssigned [_ partitions] (assigned-callback (mapv to-clojure partitions)))
                    (onPartitionsRevoked [_ partitions] (revoked-callback (mapv to-clojure partitions))))
-        topics (cond
-                 (string? topics) (vector topics)
-                 (and (sequential? topics) (string? (first topics))) topics
-                 (= Pattern (type topics)) topics
-                 (and (sequential? topics) (map? (first topics))) topics
-                 :else (throw
-                         (ex-info "Topic should be a string, sequence (of strings or maps) or pattern"
-                                  {:topic topics})))]
+        topics ^Collection (cond
+                             (string? topics) (vector topics)
+                             (and (sequential? topics) (string? (first topics))) topics
+                             (= Pattern (type topics)) topics
+                             (and (sequential? topics) (map? (first topics))) topics
+                             :else (throw
+                                     (ex-info "Topic should be a string, sequence (of strings or maps) or pattern"
+                                              {:topic topics})))]
 
     (if (and (sequential? topics) (map? (first topics)))
       (do
@@ -288,7 +232,8 @@
   "
   [^Consumer consumer & {:keys [timeout] :or {timeout 1000}}]
 
-  (let [consumer-records (.poll consumer timeout)]
+  (let [duration (Duration/ofMillis timeout)
+        consumer-records (.poll consumer duration)]
     (to-clojure consumer-records)))
 
 
@@ -365,7 +310,7 @@
   "
   ([^Consumer consumer] (.commitSync consumer))
   ([^Consumer consumer topic-partitions-offsets-metadata]
-   (let [tp-om-map (map->tp-om-map topic-partitions-offsets-metadata)]
+   (let [tp-om-map ^Map (map->tp-om-map topic-partitions-offsets-metadata)]
      (.commitSync consumer tp-om-map))))
 
 
