@@ -18,13 +18,13 @@ CAUTION: Some build (i.e. `v0.4.x`) may be partially (or even fully!) incompatib
 
 Actual library info:
 
-image:https://img.shields.io/github/license/source-c/clj-kafka-x[GitHub]
-image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg[]
-image:https://img.shields.io/clojars/dt/net.tbt-post/clj-kafka-x[ClojarsDownloads]
-image:https://img.shields.io/github/v/release/source-c/clj-kafka-x[GitHub release (latest by date)]
-image:https://img.shields.io/github/release-date/source-c/clj-kafka-x[GitHub Release Date]
-image:https://img.shields.io/github/v/tag/source-c/clj-kafka-x[GitHub tag (latest by date)]
-image:https://img.shields.io/github/last-commit/source-c/clj-kafka-x[GitHub last commit]
+image:https://img.shields.io/github/license/source-c/clj-kafka-x?style=for-the-badge[GitHub]
+image:https://img.shields.io/clojars/v/net.tbt-post/clj-kafka-x.svg?style=for-the-badge[]
+image:https://img.shields.io/clojars/dt/net.tbt-post/clj-kafka-x?style=for-the-badge[ClojarsDownloads]
+image:https://img.shields.io/github/v/release/source-c/clj-kafka-x?style=for-the-badge[GitHub release (latest by date)]
+image:https://img.shields.io/github/release-date/source-c/clj-kafka-x?style=for-the-badge[GitHub Release Date]
+image:https://img.shields.io/github/v/tag/source-c/clj-kafka-x?style=for-the-badge[GitHub tag (latest by date)]
+image:https://img.shields.io/github/last-commit/source-c/clj-kafka-x?style=for-the-badge[GitHub last commit]
 
 
 == Installation
