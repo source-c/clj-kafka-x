@@ -8,8 +8,8 @@ NOTE: Still contains zookeeper as a dependency.
 
 Tries to be as lightweigh as possible thus depends only on
 
-- `org.apache.kafka/kafka_2.12 "3.2.1"`
-- `org.apache.kafka/kafka-clients "3.2.1"`
+- `org.apache.kafka/kafka_2.12 "3.3.1"`
+- `org.apache.kafka/kafka-clients "3.3.1"`
 - `org.apache.zookeeper/zookeeper "3.8.0"`
 
 but excluding `jms`,`jmx*` and logging.
