@@ -34,7 +34,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
 
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.7.3"]
+[net.tbt-post/clj-kafka-x "0.7.4"]
 ----
 
 == Usage
