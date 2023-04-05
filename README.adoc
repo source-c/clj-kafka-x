@@ -8,13 +8,13 @@ NOTE: Still contains zookeeper as a dependency.
 
 Tries to be as lightweigh as possible thus depends only on
 
-- `org.apache.kafka/kafka_2.12 "3.3.1"`
-- `org.apache.kafka/kafka-clients "3.3.1"`
-- `org.apache.zookeeper/zookeeper "3.8.0"`
+- `org.apache.kafka/kafka_2.12 "3.4.0"`
+- `org.apache.kafka/kafka-clients "3.4.0"`
+- `org.apache.zookeeper/zookeeper "3.8.1"`
 
 but excluding `jms`,`jmx*` and logging.
 
-CAUTION: Some build (i.e. `v0.4.x`) may be partially (or even fully!) incompatible with some versions of other libraries that use NIO! If you’re experiencing build problems and/or your application crashed on start - try to update your dependencies by adding an actual version of `[io.netty/netty-all]`
+NOTE: Some builds (for instance of `v0.4.x` branch) may partially (sometimes even fully) be incompatible with some versions of other libraries that also use NIO! If you’re experiencing build problems and/or your application is unexpectedly crashed on start - try check your project dependencies more deeply, may be you will need to correct existing dependencies version or to add an actual version of full `[io.netty/netty-all]`
 
 Actual library info:
 
@@ -34,7 +34,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
 
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.7.4"]
+[net.tbt-post/clj-kafka-x "0.7.5"]
 ----
 
 == Usage
@@ -124,7 +124,7 @@ $ lein install
 
 == License
 
-Copyright © 2016-2022
+Copyright © 2016-2023
 
 Distributed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
