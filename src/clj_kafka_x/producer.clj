@@ -1,6 +1,6 @@
 (ns ^{:doc "Clojure interface for Kafka Producer API. For
   complete JavaDocs, see:
-  http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/producer/package-summary.html"}
+  https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/package-summary.html"}
   clj-kafka-x.producer
   (:refer-clojure :exclude [send flush])
   (:require [clj-kafka-x.data :refer :all]
@@ -32,8 +32,8 @@
   NOTE `KafkaProducer` instances are thread-safe and should generally be shared for best performance.
 
   For more information and available config options,
-  see: http://kafka.apache.org/0100/javadoc/index.html?org/apache/kafka/clients/producer/KafkaProducer.html
-       http://kafka.apache.org/documentation.html#producerconfigs
+  see: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+       https://kafka.apache.org/documentation.html#producerconfigs
 
 
   Usage:
@@ -75,7 +75,7 @@
   Callback should be a fn of two arguments, a map as above, and an
   exception. Exception will be nil if operation succeeded.
 
-  See: http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#send(org.apache.kafka.clients.producer.ProducerRecord)
+  See: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#send(org.apache.kafka.clients.producer.ProducerRecord)
 
   Usage:
 
@@ -103,7 +103,7 @@
      (map-future-val fut to-clojure))))
 
 (defn flush
-  "See: http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#flush()"
+  "See: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#flush()"
   [^Producer producer]
   (.flush producer))
 
@@ -112,8 +112,8 @@
 
   See:
 
-  - http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close()
-  - http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close(long,%20java.util.concurrent.TimeUnit)"
+  - https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close()
+  - https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close(java.time.Duration)"
   ([^Producer producer]
    (.close producer))
   ([^Producer producer timeout-ms]
