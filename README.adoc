@@ -121,6 +121,33 @@ message count per poll execution may be specified by `max.poll.records` field of
 $ lein install
 ----
 
+== Development and Testing
+
+The project includes a test suite to verify functionality.
+
+[source,text]
+----
+$ lein with-profile dev test
+----
+
+For test coverage reports:
+
+[source,text]
+----
+$ lein with-profile dev cloverage
+----
+
+=== Integration Tests
+
+The project includes integration tests that require a running Kafka instance. By default, these tests are skipped. To run them:
+
+[source,clojure]
+----
+(binding [clj-kafka-x.integration-test/*run-integration-tests* true
+          clj-kafka-x.integration-test/*kafka-bootstrap-servers* "localhost:9092"]
+  (clj-kafka-x.integration-test/run-integration-tests))
+----
+
 == License
 
 Copyright © 2016-2025
