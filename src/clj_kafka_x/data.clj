@@ -85,9 +85,8 @@
   (if (or (nil? offset) (nil? metadata))
     (throw (ex-info "Provided map is missing offset or metadata keys" m))
     (OffsetAndMetadata. offset metadata)))
-
-;;NOT happy with this function name
-(defn tp-om-map->map
+ 
+(defn topic-partition-offsets->clj
   "Takes a java.util.Map made of TopicPartition as keys and OffsetAndMetadata as values,
    converts them to the following clojure equivalent data structure
 
@@ -96,32 +95,30 @@
    {:topic \"dev\", :partition 1} {:offset 234, :metadata \"loads of data\"},
    {:topic \"dev\", :partition 7} {:offset 23, :metadata \"mega data\"}}
   "
-  [^Map tp-om]
+  [^Map topic-partition-offsets-map]
   (let [reduce-fn (fn [m [^TopicPartition tp ^OffsetAndMetadata om]]
                     (assoc m (to-clojure tp) (to-clojure om)))]
-    (reduce reduce-fn {} tp-om)))
-
-;;NOT happy with this function name
-(defn map->tp-om-map
+    (reduce reduce-fn {} topic-partition-offsets-map)))
+ 
+(defn clj->topic-partition-offsets-map
   "Takes a Clojure map (see below for example) and converts it to a java.util.Map made of TopicPartition as keys and OffsetAndMetadata as values
-
+ 
   {{:topic \"test\", :partition 77} {:offset 34, :metadata \"data data\"},
    {:topic \"prod\", :partition 4} {:offset 24, :metadata \"more data\"},
    {:topic \"dev\", :partition 1} {:offset 234, :metadata \"loads of data\"},
    {:topic \"dev\", :partition 7} {:offset 23, :metadata \"mega data\"}}
   "
   [m]
-  (let [tp-om-map (HashMap.)
+  (let [^Map java-map (HashMap.)
         reduce-fn (fn [^Map m kv]
                     (.put m (map->topic-partition (first kv))
                           (map->offset-metadata (second kv)))
                     m)]
-    (reduce reduce-fn tp-om-map  m)))
-
-
-;;NOT happy with this function name
-(defn str-pi-map->map
-  "Takes a java.util.Map made of Strings as keys and java.util.List <PartitionInfo> as values,
+    (reduce reduce-fn java-map m)))
+ 
+ 
+(defn topic-partitions-info->clj
+  "Takes a java.util.Map made of Strings (topic names) as keys and java.util.List <PartitionInfo> as values,
    converts it to a Map with the keys being the topic name and the values being a vector of maps (each map representing information about a topic partition)
   e.g
 
@@ -147,10 +144,10 @@
    :in-sync-replicas [{:id 3, :host \"172.17.0.4\", :port 9094} {:id 1, :host \"172.17.0.3\", :port 9092} {:id 2, :host \"172.17.0.2\", :port 9093}]}]}
   "
   [^Map str-pi]
-  (let [reduce-fn (fn [m [name pi-list]]
-                    (assoc m name (mapv to-clojure pi-list)))]
+  (let [reduce-fn (fn [clj-map [name pi-list]]
+                    (assoc clj-map name (mapv to-clojure pi-list)))]
     (reduce reduce-fn {} str-pi)))
-
+ 
 (defn metrics->map
   "Returns a sequence of maps, with each map representing a metric.
    The composition of each map is :group :name :description :tags :value

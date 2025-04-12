@@ -1,6 +1,6 @@
 (ns ^{:doc "Clojure interface for Kafka Consumer API.
             For complete JavaDocs, see:
-            https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/package-summary.html"}
+            https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/package-summary.html"}
   clj-kafka-x.consumers.simple
   (:require [clj-kafka-x.data :refer :all]
             [clj-kafka-x.impl.helpers :refer :all])
@@ -20,12 +20,12 @@
   "Takes a map of config options and returns a `KafkaConsumer` for consuming records from Kafka.
 
   NOTE `KafkaConsumer` instances are NOT thread-safe, see
-  https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded
-
+  https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#multithreaded
+ 
   For more information and available config options,
-  see: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+  see: https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
        http://kafka.apache.org/documentation.html#newconsumerconfigs
-
+ 
   Usage:
 
 ;; Created using just a map of configs, in this case the keys
@@ -88,12 +88,12 @@
                        {:topic \"topic-b\" :partitions #{0 1}}
                        {:topic \"topic-c\" :partitions #{0}}])
   ;; => nil
-
+ 
   For more in-depth information
-  https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.Collection)
-  http://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.Collection,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
-  http://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.regex.Pattern,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
-  https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.Collection)
+  https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.Collection)
+  http://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.Collection,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
+  http://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#subscribe(java.util.regex.Pattern,%20org.apache.kafka.clients.consumer.ConsumerRebalanceListener)
+  https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#assign(java.util.Collection)
   "
   [^Consumer consumer topics & {:keys [assigned-callback revoked-callback]
                                 :or   {assigned-callback (fn [_])
@@ -279,13 +279,13 @@
   ([^Consumer consumer offset-commit-fn]
    (let [callback (reify OffsetCommitCallback
                     (onComplete [_ offsets exception]
-                      (offset-commit-fn (tp-om-map->map offsets) exception)))]
+                      (offset-commit-fn (topic-partition-offsets->clj offsets) exception)))]
      (.commitAsync consumer callback)))
   ([^Consumer consumer topic-partition-offsets-metadata offset-commit-fn]
    (let [callback (reify OffsetCommitCallback
                     (onComplete [_ offsets exception]
-                      (offset-commit-fn (tp-om-map->map offsets) exception)))
-         tp-om-map (map->tp-om-map topic-partition-offsets-metadata)]
+                      (offset-commit-fn (topic-partition-offsets->clj offsets) exception)))
+         tp-om-map (clj->topic-partition-offsets-map topic-partition-offsets-metadata)]
      (.commitAsync consumer tp-om-map callback))))
 
 
@@ -311,7 +311,7 @@
   "
   ([^Consumer consumer] (.commitSync consumer))
   ([^Consumer consumer topic-partitions-offsets-metadata]
-   (let [tp-om-map ^Map (map->tp-om-map topic-partitions-offsets-metadata)]
+   (let [tp-om-map ^Map (clj->topic-partition-offsets-map topic-partitions-offsets-metadata)]
      (.commitSync consumer tp-om-map))))
 
 
@@ -319,7 +319,7 @@
   "Gets the last committed offset for the partition of a topic.
    NOTE This function is a blocking I/O operation.
 
-   see http://kafka.apache.org/0100/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#committed(org.apache.kafka.common.TopicPartition)
+   see http://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#committed(org.apache.kafka.common.TopicPartition)
 
   Usage:
 
@@ -336,11 +336,11 @@
 (defn list-all-topics
   "Get metadata about ALL partitions for ALL topics that the user is authorized to view.
    NOTE This function is a blocking I/O operation.
-
-   See https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#listTopics()
-
+ 
+   See https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#listTopics()
+ 
   Usage :
-
+ 
   (list-all-topics consumer)
   ;; =>{\"topic-a\"
   ;;    [{:topic \"topic-a\",
@@ -366,16 +366,16 @@
   ;;      :in-sync-replicas [{:id 2, :host \"172.17.0.3\", :port 9093}]}]}
   "
   [^Consumer consumer]
-  (str-pi-map->map (.listTopics consumer)))
+  (topic-partitions-info->clj (.listTopics consumer)))
 
 (defn list-all-partitions
   "Get metadata about all partitions for a particular topic.
    NOTE This function is a blocking I/O operation.
-
-   See https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#partitionsFor(java.lang.String)
-
+ 
+   See https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#partitionsFor(java.lang.String)
+ 
   Usage :
-
+ 
   (list-all-partitions consumer)
   ;; => [{:topic \"topic-b\",
   ;;      :partition 2,
@@ -400,10 +400,10 @@
 (defn pause
   "Stops messages being consumed from the given partitions.
    This takes effect on the next call on the messages function
-   See https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#pause(java.util.Collection)
-
+   See https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#pause(java.util.Collection)
+ 
   Usage:
-
+ 
   (pause consumer {:topic \"topic-a\" :partition 2}
                   {:topic \"topic-b\" :partition 0})
   "
@@ -416,10 +416,10 @@
 (defn resume
   "Resumes messages being consumed from the given partitions.
    This takes effect on the next call on the messages function
-   See https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#resume(java.util.Collection)
-
+   See https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html#resume(java.util.Collection)
+ 
   Usage:
-
+ 
   (resume consumer {:topic \"topic-a\" :partition 2}
                    {:topic \"topic-b\" :partition 0})
   "

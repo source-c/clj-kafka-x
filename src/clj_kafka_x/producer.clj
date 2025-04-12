@@ -1,6 +1,6 @@
 (ns ^{:doc "Clojure interface for Kafka Producer API. For
   complete JavaDocs, see:
-  https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/package-summary.html"}
+  https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/package-summary.html"}
   clj-kafka-x.producer
   (:refer-clojure :exclude [send flush])
   (:require [clj-kafka-x.data :refer :all]
@@ -30,12 +30,12 @@
   "Takes a map of config options and returns a `KafkaProducer` for publishing records to Kafka.
 
   NOTE `KafkaProducer` instances are thread-safe and should generally be shared for best performance.
-
+ 
   For more information and available config options,
-  see: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
+  see: https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html
        https://kafka.apache.org/documentation.html#producerconfigs
-
-
+ 
+ 
   Usage:
 
 ;; Created using just a map of configs, in this case the keys
@@ -74,11 +74,11 @@
   a callback fn that will be called when the operation completes.
   Callback should be a fn of two arguments, a map as above, and an
   exception. Exception will be nil if operation succeeded.
-
-  See: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#send(org.apache.kafka.clients.producer.ProducerRecord)
-
+ 
+  See: https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#send(org.apache.kafka.clients.producer.ProducerRecord)
+ 
   Usage:
-
+ 
   ;;To send the message asynchronously and return a Future
   (send producer (record \"topic-a\" \"Test message 1\"))
   ;; => #object[string representation of future object]
@@ -101,19 +101,19 @@
                                       (onCompletion [_ metadata exception]
                                         (callback (and metadata (to-clojure metadata)) exception))))]
      (map-future-val fut to-clojure))))
-
+ 
 (defn flush
-  "See: https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#flush()"
+  "See: https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#flush()"
   [^Producer producer]
   (.flush producer))
 
 (defn close
   "Like `.close`, but with a default time unit of ms for the arity with timeout.
-
+ 
   See:
-
-  - https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close()
-  - https://kafka.apache.org/34/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close(java.time.Duration)"
+ 
+  - https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close()
+  - https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/KafkaProducer.html#close(java.time.Duration)"
   ([^Producer producer]
    (.close producer))
   ([^Producer producer timeout-ms]

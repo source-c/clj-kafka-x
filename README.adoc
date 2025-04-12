@@ -4,15 +4,14 @@ A Clojure library for the Apache Kafka (distributed stream-processing software p
 
 Uses KF protocol and does not rely on ZooKeeper.
 
-NOTE: Still contains zookeeper as a dependency.
-
 Tries to be as lightweigh as possible thus depends only on
 
-- `org.apache.kafka/kafka_2.12 "3.4.0"`
-- `org.apache.kafka/kafka-clients "3.4.0"`
-- `org.apache.zookeeper/zookeeper "3.8.1"`
+- `org.apache.kafka/kafka_2.12 "3.9.0"`
+- `org.apache.kafka/kafka-clients "4.0.0"`
 
-but excluding `jms`,`jmx*` and logging.
+but excluding `jmx*` and logging.
+
+NOTE: The Zookeeper dependency has been removed as it's not required by modern Kafka clients for standard operations.
 
 NOTE: Some builds (for instance of `v0.4.x` branch) may partially (sometimes even fully) be incompatible with some versions of other libraries that also use NIO! If you’re experiencing build problems and/or your application is unexpectedly crashed on start - try check your project dependencies more deeply, may be you will need to correct existing dependencies version or to add an actual version of full `[io.netty/netty-all]`
 
@@ -31,12 +30,12 @@ image:https://img.shields.io/github/last-commit/source-c/clj-kafka-x?style=for-t
 
 Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
 `project.clj`:
-
+ 
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.7.5"]
+[net.tbt-post/clj-kafka-x "0.8.0"]
 ----
-
+ 
 == Usage
 
 === Producer
@@ -124,7 +123,7 @@ $ lein install
 
 == License
 
-Copyright © 2016-2023
+Copyright © 2016-2025
 
 Distributed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
