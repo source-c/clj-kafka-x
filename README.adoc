@@ -181,7 +181,7 @@ See link:CHANGELOG.adoc[CHANGELOG.adoc] for version history.
 
 == License
 
-Copyright © 2016-2025
+Copyright © 2016-2026
 
 Distributed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
