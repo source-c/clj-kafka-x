@@ -46,7 +46,9 @@
   (mapv to-clojure (.partitionsFor client topic)))
 
 (defn ->topic-partition-array
-  "Converts a sequence of topic-partition maps to a TopicPartition array."
+  "Converts a sequence of topic-partition maps to a Collection of TopicPartition objects.
+   Despite the name, returns a java.util.List for compatibility with Kafka's Consumer API."
   [tp-seq]
   (->> (map map->topic-partition tp-seq)
-       (into-array TopicPartition)))
+       (into-array TopicPartition)
+       java.util.Arrays/asList))

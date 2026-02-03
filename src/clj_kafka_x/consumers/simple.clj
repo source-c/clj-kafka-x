@@ -199,10 +199,10 @@
    (seek consumer (vector {:topic topic :partition partition}) offset))
   ([^Consumer consumer tp-seq offset]
    (let [tp-class-seq (map map->topic-partition tp-seq)
-         tp-class-array (into-array TopicPartition tp-class-seq)]
+         tp-collection (java.util.ArrayList. ^java.util.Collection (vec tp-class-seq))]
      (cond
-       (= :beginning offset) (.seekToBeginning consumer tp-class-array)
-       (= :end offset) (.seekToEnd consumer tp-class-array)
+       (= :beginning offset) (.seekToBeginning consumer tp-collection)
+       (= :end offset) (.seekToEnd consumer tp-collection)
        (integer? offset) (run! #(.seek consumer % offset) tp-class-seq)
        :else (throw (ex-info "offset should be :beginning :end or a number"
                              {:offset offset}))))))
