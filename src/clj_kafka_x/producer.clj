@@ -3,8 +3,8 @@
   https://kafka.apache.org/37/javadoc/org/apache/kafka/clients/producer/package-summary.html"}
   clj-kafka-x.producer
   (:refer-clojure :exclude [send flush])
-  (:require [clj-kafka-x.data :refer :all]
-            [clj-kafka-x.impl.helpers :refer :all])
+  (:require [clj-kafka-x.data :refer [to-clojure]]
+            [clj-kafka-x.impl.helpers :refer [coerce-config client-metrics client-partitions-for]])
   (:import [java.util.concurrent Future]
            [org.apache.kafka.clients.producer Callback Producer KafkaProducer ProducerRecord ProducerConfig]
            (org.apache.kafka.common.serialization Serializer ByteArraySerializer StringSerializer)
@@ -142,7 +142,7 @@
   ;;                         {:id 2, :host \"172.17.0.3\", :port 9093}]}]
   "
   [^Producer producer topic]
-  (mapv to-clojure (.partitionsFor producer topic)))
+  (client-partitions-for producer topic))
 
 (defn metrics
   "Returns a sequence of maps representing all the producer's internal metrics.
@@ -169,4 +169,4 @@
   ;;      :value 0.23866348448687352}]
   "
   [^Producer producer]
-  (metrics->map (.metrics producer)))
+  (client-metrics producer))

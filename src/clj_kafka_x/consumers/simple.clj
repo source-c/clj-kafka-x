@@ -2,8 +2,11 @@
             For complete JavaDocs, see:
             https://kafka.apache.org/40/javadoc/org/apache/kafka/clients/consumer/package-summary.html"}
   clj-kafka-x.consumers.simple
-  (:require [clj-kafka-x.data :refer :all]
-            [clj-kafka-x.impl.helpers :refer :all])
+  (:require [clj-kafka-x.data :refer [to-clojure map->topic-partition map->offset-metadata
+                                       topic-partition-offsets->clj clj->topic-partition-offsets-map
+                                       topic-partitions-info->clj]]
+            [clj-kafka-x.impl.helpers :refer [coerce-config client-metrics client-partitions-for
+                                              ->topic-partition-array]])
   (:import java.util.regex.Pattern
            [org.apache.kafka.clients.consumer ConsumerRebalanceListener Consumer KafkaConsumer OffsetCommitCallback ConsumerConfig]
            [org.apache.kafka.common.serialization ByteArrayDeserializer Deserializer StringDeserializer]
@@ -394,7 +397,7 @@
   ;;      :in-sync-replicas [{:id 2, :host \"172.17.0.3\", :port 9093}]}]
 "
   [^Consumer consumer topic]
-  (mapv to-clojure (.partitionsFor consumer topic)))
+  (client-partitions-for consumer topic))
 
 
 (defn pause
@@ -408,9 +411,7 @@
                   {:topic \"topic-b\" :partition 0})
   "
   [^Consumer consumer tp-seq]
-  (->> (map map->topic-partition tp-seq)
-       (into-array TopicPartition)
-       (.pause consumer)))
+  (.pause consumer (->topic-partition-array tp-seq)))
 
 
 (defn resume
@@ -424,9 +425,7 @@
                    {:topic \"topic-b\" :partition 0})
   "
   [^Consumer consumer tp-seq]
-  (->> (map map->topic-partition tp-seq)
-       (into-array TopicPartition)
-       (.resume consumer)))
+  (.resume consumer (->topic-partition-array tp-seq)))
 
 
 (defn metrics
@@ -449,4 +448,4 @@
   ;;      :value 0.0}]
   "
   [^Consumer consumer]
-  (metrics->map (.metrics consumer)))
+  (client-metrics consumer))
