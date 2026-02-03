@@ -1,0 +1,25 @@
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+== 0.8.1
+
+=== Fixed
+
+* Kafka 4.x API compatibility for `pause`, `resume`, and `seek` functions (now correctly pass `Collection` instead of array)
+
+=== Changed
+
+* Updated dependencies to kafka 3.9.1 and kafka-clients 4.1.1
+
+=== Improved
+
+* Test coverage expanded to ~80% with comprehensive unit tests for producer, consumer, data conversion, and helper functions
+* Added tests for `with-open` support verifying proper resource cleanup
+
+== 0.8.0
+
+=== Changed
+
+* Updated to Kafka 3.9.x / kafka-clients 4.0.x
+* Removed ZooKeeper dependency

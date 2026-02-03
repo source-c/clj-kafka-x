@@ -136,6 +136,18 @@
     (let [producer (create-mock-producer)]
       (is (nil? (kp/close producer 1000))))))
 
+(deftest test-with-open
+  (testing "producer works with with-open and is automatically closed"
+    (let [producer-ref (atom nil)]
+      (with-open [producer (create-mock-producer)]
+        (reset! producer-ref producer)
+        (kp/send producer (kp/record "test-topic" "key" "value"))
+        (kp/flush producer)
+        (is (= 1 (count (.history producer)))))
+      ;; After with-open, producer should be closed
+      (is (thrown? IllegalStateException
+                   (kp/send @producer-ref (kp/record "test-topic" "another")))))))
+
 (deftest test-producer-history
   (testing "MockProducer records sent messages"
     (let [producer (create-mock-producer)]

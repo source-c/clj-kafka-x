@@ -287,3 +287,18 @@
             (is (contains? first-metric :tags))
             (is (contains? first-metric :value)))))
       (.close consumer))))
+
+;; with-open test
+
+(deftest test-with-open
+  (testing "consumer works with with-open and is automatically closed"
+    (let [consumer-ref (atom nil)]
+      (with-open [consumer (create-mock-consumer)]
+        (reset! consumer-ref consumer)
+        (setup-mock-consumer consumer "test-topic" [0])
+        (add-record-to-consumer consumer "test-topic" 0 0 "key" "value")
+        (let [msgs (kc/messages consumer)]
+          (is (= 1 (count msgs)))))
+      ;; After with-open, consumer should be closed
+      (is (thrown? IllegalStateException
+                   (kc/messages @consumer-ref))))))

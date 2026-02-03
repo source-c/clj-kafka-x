@@ -1,0 +1,89 @@
+= clj-kafka-x tests
+
+This directory contains tests for the clj-kafka-x library.
+
+== Running Tests
+
+To run all tests:
+
+[source,bash]
+----
+lein with-profile dev test
+----
+
+To run specific tests:
+
+[source,bash]
+----
+lein with-profile dev test clj-kafka-x.producer-test
+lein with-profile dev test clj-kafka-x.consumers.simple-test
+lein with-profile dev test clj-kafka-x.data-test
+lein with-profile dev test clj-kafka-x.impl.helpers-test
+----
+
+== Test Coverage
+
+To generate test coverage reports:
+
+[source,bash]
+----
+lein with-profile dev cloverage
+----
+
+The coverage report will be generated in `target/coverage/`.
+
+Current coverage (~80% overall):
+
+[cols="2,1,1"]
+|===
+|Namespace |Forms |Lines
+
+|clj-kafka-x.consumers.simple
+|80.65%
+|83.13%
+
+|clj-kafka-x.data
+|81.19%
+|83.12%
+
+|clj-kafka-x.impl.helpers
+|87.90%
+|93.55%
+
+|clj-kafka-x.producer
+|76.09%
+|81.82%
+
+|*Total*
+|*81.42%*
+|*84.38%*
+|===
+
+== Test Structure
+
+test_helpers.clj::
+Helper functions for testing, including mock producer and consumer setup.
+
+producer_test.clj::
+Tests for producer functionality: serializer creation, record creation (all arities), send (with/without callbacks), flush, close, partitions, metrics, `with-open` support.
+
+consumers/simple_test.clj::
+Tests for consumer functionality: deserializer creation, subscribe (string, sequence, regex, manual partition assignment, callbacks), subscriptions, unsubscribe, seek (offset, beginning, end, multiple partitions), messages, commit (sync/async), pause, resume, metrics, `with-open` support.
+
+data_test.clj::
+Tests for data conversion: `map->properties`, `map->topic-partition`, `map->offset-metadata`, `to-clojure` protocol for all Kafka types, bidirectional conversion functions, roundtrip tests.
+
+impl/helpers_test.clj::
+Tests for helper functions: config coercion (STRING, INT, LONG, DOUBLE, LIST), topic partition collection conversion.
+
+integration_test.clj::
+Integration tests requiring a running Kafka instance (skipped by default).
+
+test_runner.clj::
+Standalone test runner.
+
+== Notes
+
+The tests use `MockProducer` and `MockConsumer` from Kafka's test utilities to avoid requiring a running Kafka instance. This allows for faster and more reliable unit tests.
+
+For integration testing with a real Kafka instance, see `integration_test.clj`.
