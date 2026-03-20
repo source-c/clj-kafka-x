@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [clj-kafka-x.consumers.shared :as ks])
   (:import [org.apache.kafka.common.serialization StringDeserializer ByteArrayDeserializer]
-           [org.apache.kafka.clients.consumer MockShareConsumer ConsumerRecord AcknowledgeType]))
+           [org.apache.kafka.clients.consumer MockShareConsumer ConsumerRecord AcknowledgeType]
+           [org.apache.kafka.common TopicIdPartition Uuid KafkaException]))
 
 (deftest test-deserializers
   (testing "string-deserializer creates a StringDeserializer"
@@ -102,19 +103,6 @@
 
 ;; Acknowledge tests
 
-(deftest test-acknowledge-default
-  (testing "acknowledge with default type (accept)"
-    (let [consumer (create-mock-share-consumer)]
-      (ks/subscribe consumer "test-topic")
-      (add-record consumer "test-topic" 0 0 "key" "value")
-      (let [msgs (ks/messages consumer)
-            record (first msgs)]
-        ;; acknowledge expects a raw ConsumerRecord, but messages returns maps.
-        ;; We need to use the raw Java record for acknowledge.
-        ;; Re-poll to get raw records for ack testing.
-        )
-      (.close consumer))))
-
 (deftest test-acknowledge-with-raw-records
   (testing "acknowledge works with ConsumerRecord objects"
     (let [consumer (create-mock-share-consumer)
@@ -176,12 +164,59 @@
 
 ;; Commit tests
 
+(deftest test-commit-result->clj
+  (testing "commit-result->clj converts TopicIdPartition map with no exception"
+    (let [commit-result->clj @#'ks/commit-result->clj
+          tip (TopicIdPartition. (Uuid/randomUuid) 0 "test-topic")
+          result (java.util.HashMap. {tip (java.util.Optional/empty)})]
+      (let [clj-result (commit-result->clj result)]
+        (is (= 1 (count clj-result)))
+        (let [[tp ex] (first clj-result)]
+          (is (= "test-topic" (:topic tp)))
+          (is (= 0 (:partition tp)))
+          (is (nil? ex))))))
+
+  (testing "commit-result->clj converts TopicIdPartition map with exception"
+    (let [commit-result->clj @#'ks/commit-result->clj
+          tip (TopicIdPartition. (Uuid/randomUuid) 1 "test-topic")
+          ex (KafkaException. "test error")
+          result (java.util.HashMap. {tip (java.util.Optional/of ex)})]
+      (let [clj-result (commit-result->clj result)]
+        (is (= 1 (count clj-result)))
+        (let [[tp err] (first clj-result)]
+          (is (= "test-topic" (:topic tp)))
+          (is (= 1 (:partition tp)))
+          (is (instance? KafkaException err)))))))
+
 (deftest test-commit-sync
   (testing "commit-sync returns a map"
     (let [consumer (create-mock-share-consumer)]
       (ks/subscribe consumer "test-topic")
       (let [result (ks/commit-sync consumer)]
         (is (map? result)))
+      (.close consumer)))
+
+  (testing "commit-sync with timeout returns a map"
+    (let [consumer (create-mock-share-consumer)]
+      (ks/subscribe consumer "test-topic")
+      (let [result (ks/commit-sync consumer 5000)]
+        (is (map? result)))
+      (.close consumer))))
+
+(deftest test-commit-sync-with-records
+  (testing "commit-sync after acknowledge returns topic-partition results"
+    (let [consumer (create-mock-share-consumer)
+          record (ConsumerRecord. "test-topic" 0 0 "key" "value")]
+      (ks/subscribe consumer "test-topic")
+      (.addRecord consumer record)
+      (.poll consumer (java.time.Duration/ofMillis 100))
+      (ks/acknowledge consumer record :accept)
+      (let [result (ks/commit-sync consumer)]
+        (is (map? result))
+        (when (seq result)
+          (let [[tp ex] (first result)]
+            (is (contains? tp :topic))
+            (is (contains? tp :partition)))))
       (.close consumer))))
 
 (deftest test-commit-async
@@ -189,6 +224,19 @@
     (let [consumer (create-mock-share-consumer)]
       (ks/subscribe consumer "test-topic")
       (is (nil? (ks/commit-async consumer)))
+      (.close consumer)))
+
+  (testing "commit-async with callback"
+    (let [consumer (create-mock-share-consumer)
+          callback-result (atom nil)
+          record (ConsumerRecord. "test-topic" 0 0 "key" "value")]
+      (ks/subscribe consumer "test-topic")
+      (.addRecord consumer record)
+      (.poll consumer (java.time.Duration/ofMillis 100))
+      (ks/acknowledge consumer record :accept)
+      (ks/commit-async consumer (fn [offsets exception]
+                                  (reset! callback-result {:offsets offsets
+                                                           :exception exception})))
       (.close consumer))))
 
 ;; Metrics test
@@ -213,7 +261,12 @@
   (testing "share consumer can be closed"
     (let [consumer (create-mock-share-consumer)]
       (ks/subscribe consumer "test-topic")
-      (is (nil? (ks/close consumer))))))
+      (is (nil? (ks/close consumer)))))
+
+  (testing "share consumer can be closed with timeout"
+    (let [consumer (create-mock-share-consumer)]
+      (ks/subscribe consumer "test-topic")
+      (is (nil? (ks/close consumer 5000))))))
 
 ;; with-open test
 
