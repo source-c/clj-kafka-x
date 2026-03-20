@@ -119,6 +119,8 @@
   "Acknowledges a consumed record. In explicit acknowledgement mode, every record
   must be acknowledged before the next poll.
 
+  Takes a message map as returned by [[messages]] (must contain :topic, :partition, :offset).
+
   The acknowledgement type can be:
     :accept  - record consumed successfully (default)
     :release - not consumed, release for redelivery
@@ -127,19 +129,20 @@
 
   Usage:
 
-  (acknowledge consumer record)
-  ;; => nil
+  (let [msgs (messages consumer)]
+    (doseq [msg msgs]
+      (acknowledge consumer msg)))
 
-  (acknowledge consumer record :reject)
+  (acknowledge consumer msg :reject)
   ;; => nil
   "
-  ([^ShareConsumer consumer record]
-   (.acknowledge consumer record))
-  ([^ShareConsumer consumer record ack-type]
+  ([^ShareConsumer consumer {:keys [topic partition offset]}]
+   (.acknowledge consumer ^String topic (int partition) (long offset) AcknowledgeType/ACCEPT))
+  ([^ShareConsumer consumer {:keys [topic partition offset]} ack-type]
    (let [type (or (get acknowledge-types ack-type)
                   (throw (ex-info "Unknown acknowledge type, expected one of :accept :release :reject :renew"
                                   {:ack-type ack-type})))]
-     (.acknowledge consumer record type))))
+     (.acknowledge consumer ^String topic (int partition) (long offset) type))))
 
 
 (defn- commit-result->clj [^Map result]

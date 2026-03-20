@@ -21,7 +21,8 @@
 
   TopicIdPartition
   (to-clojure [x]
-    {:topic (.topic x)
+    {:topic-id (.topicId x)
+     :topic (.topic x)
      :partition (.partition x)})
 
   ConsumerRecord
