@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+== 0.9.0
+
+=== Added
+
+* Share Consumer support (`clj-kafka-x.consumers.shared`) — Kafka's new queueing feature (KIP-932) enabling multiple consumers to read from the same partition, solving the Head of Line Blocking problem
+* `TopicIdPartition` conversion in data layer (includes `:topic-id`, `:topic`, `:partition`)
+
+=== Changed
+
+* Upgraded kafka-clients to 4.2.0
+* Dropped `kafka_2.12` server dependency (unused — all imports come from kafka-clients)
+* Migrated CircleCI config from v1 (`circle.yml`) to v2.1 (`.circleci/config.yml`) with dependency caching
+* Updated JavaDoc references to Kafka 4.2 across producer and consumer namespaces
+
+=== Improved
+
+* Test coverage expanded to ~82% forms / ~86% lines across all namespaces
+
 == 0.8.1
 
 === Fixed

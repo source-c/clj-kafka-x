@@ -6,10 +6,7 @@ Uses KF protocol and does not rely on ZooKeeper.
 
 Tries to be as lightweight as possible thus depends only on
 
-- `org.apache.kafka/kafka_2.12 "3.9.1"`
-- `org.apache.kafka/kafka-clients "4.1.1"`
-
-but excluding `jmx*` and logging.
+- `org.apache.kafka/kafka-clients "4.2.0"`
 
 NOTE: The Zookeeper dependency has been removed as it's not required by modern Kafka clients for standard operations.
 
@@ -33,7 +30,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
  
 [source,clojure]
 ----
-[net.tbt-post/clj-kafka-x "0.8.1"]
+[net.tbt-post/clj-kafka-x "0.9.0"]
 ----
  
 == Usage
@@ -62,6 +59,35 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's]
                             (kc/string-deserializer))]
   (kc/subscribe c "topic-a")
   (kc/messages c))
+----
+
+=== Share Consumer (Kafka Queues)
+
+Share consumers (KIP-932) allow multiple consumers to read from the same partition concurrently,
+solving the Head of Line Blocking problem.
+
+[source,clojure]
+----
+(require '[clj-kafka-x.consumers.shared :as ks])
+
+(with-open [c (ks/share-consumer {"bootstrap.servers" "localhost:9092"
+                                   "group.id" "my-share-group"}
+                                   (ks/string-deserializer)
+                                   (ks/string-deserializer))]
+  (ks/subscribe c "topic-a")
+  (let [msgs (ks/messages c)]
+    (doseq [msg msgs]
+      (ks/acknowledge c msg))
+    (ks/commit-sync c)
+    msgs))
+----
+
+Records can be acknowledged with `:accept` (default), `:release`, `:reject`, or `:renew`:
+
+[source,clojure]
+----
+(ks/acknowledge c msg :reject)  ;; reject permanently
+(ks/acknowledge c msg :release) ;; release for redelivery
 ----
 
 NOTE: When you use multiple partitions per topic it is required
@@ -123,7 +149,7 @@ $ lein install
 
 == Development and Testing
 
-The project includes a comprehensive test suite with ~80% code coverage.
+The project includes a comprehensive test suite with ~82% code coverage.
 
 [source,text]
 ----
@@ -143,13 +169,17 @@ Current coverage:
 |===
 |Namespace |Forms |Lines
 
+|clj-kafka-x.consumers.shared
+|81.60%
+|89.09%
+
 |clj-kafka-x.consumers.simple
 |80.65%
 |83.13%
 
 |clj-kafka-x.data
-|81.19%
-|83.12%
+|81.95%
+|83.95%
 
 |clj-kafka-x.impl.helpers
 |87.90%
@@ -160,8 +190,8 @@ Current coverage:
 |81.82%
 
 |*Total*
-|*81.42%*
-|*84.38%*
+|*81.70%*
+|*85.51%*
 |===
 
 === Integration Tests
