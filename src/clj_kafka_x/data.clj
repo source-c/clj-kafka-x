@@ -2,7 +2,7 @@
   (:import [java.util HashMap Map Properties]
            [org.apache.kafka.clients.consumer ConsumerRecord ConsumerRecords OffsetAndMetadata]
            org.apache.kafka.clients.producer.RecordMetadata
-           [org.apache.kafka.common Metric MetricName Node PartitionInfo TopicPartition]))
+           [org.apache.kafka.common Metric MetricName Node PartitionInfo TopicIdPartition TopicPartition]))
 
 (defprotocol ToClojure
   ""
@@ -15,6 +15,11 @@
   (to-clojure [x] nil)
 
   TopicPartition
+  (to-clojure [x]
+    {:topic (.topic x)
+     :partition (.partition x)})
+
+  TopicIdPartition
   (to-clojure [x]
     {:topic (.topic x)
      :partition (.partition x)})
