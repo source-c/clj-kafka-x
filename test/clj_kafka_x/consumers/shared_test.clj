@@ -45,6 +45,10 @@
     (let [consumer (create-mock-share-consumer)]
       (is (thrown? clojure.lang.ExceptionInfo
                    (ks/subscribe consumer 123)))
+      (is (thrown? clojure.lang.ExceptionInfo
+                   (ks/subscribe consumer [1 2])))
+      (is (thrown? clojure.lang.ExceptionInfo
+                   (ks/subscribe consumer [{:topic "topic-a" :partitions #{0}}])))
       (.close consumer))))
 
 ;; Subscriptions test

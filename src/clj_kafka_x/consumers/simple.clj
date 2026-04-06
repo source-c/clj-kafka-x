@@ -19,6 +19,12 @@
 (defn string-deserializer [] (StringDeserializer.))
 (defn byte-array-deserializer [] (ByteArrayDeserializer.))
 
+(defn- valid-manual-subscription?
+  [{:keys [topic partitions]}]
+  (and (string? topic)
+       (coll? partitions)
+       (every? integer? partitions)))
+
 (defn consumer
   "Takes a map of config options and returns a `KafkaConsumer` for consuming records from Kafka.
 
@@ -107,14 +113,20 @@
                    (onPartitionsRevoked [_ partitions] (revoked-callback (mapv to-clojure partitions))))
         topics ^Collection (cond
                              (string? topics) (vector topics)
-                             (and (sequential? topics) (string? (first topics))) topics
+                             (and (sequential? topics) (every? string? topics)) topics
                              (= Pattern (type topics)) topics
-                             (and (sequential? topics) (map? (first topics))) topics
+                             (and (sequential? topics) (every? map? topics))
+                             (do
+                               (when-not (every? valid-manual-subscription? topics)
+                                 (throw
+                                   (ex-info "Manual subscriptions must be maps with string :topic and a collection of integer :partitions"
+                                            {:topic topics})))
+                               topics)
                              :else (throw
-                                     (ex-info "Topic should be a string, sequence (of strings or maps) or pattern"
+                                     (ex-info "Topic should be a string, sequence of strings, sequence of manual subscription maps, or pattern"
                                               {:topic topics})))]
 
-    (if (and (sequential? topics) (map? (first topics)))
+    (if (and (sequential? topics) (every? map? topics))
       (do
         (let [expand-tps (fn [{:keys [topic partitions]}]
                            (reduce #(conj %1 (map->topic-partition {:topic topic :partition %2})) [] partitions))

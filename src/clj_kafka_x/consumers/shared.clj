@@ -71,7 +71,7 @@
   [^ShareConsumer consumer topics]
   (let [topics ^Collection (cond
                              (string? topics) (vector topics)
-                             (sequential? topics) topics
+                             (and (sequential? topics) (every? string? topics)) topics
                              :else (throw
                                      (ex-info "Topic should be a string or sequence of strings"
                                               {:topic topics})))]
